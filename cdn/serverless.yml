@@ -3,7 +3,7 @@ service: cdn
 provider:
   name: aws
   stage: ${opt:stage}
-  stackName: art-center-user-interface-cdn-${self:provider.stage}
+  stackName: art-center-cdn-${self:provider.stage}
 
 custom:
   hosting:
