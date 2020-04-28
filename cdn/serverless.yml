@@ -37,3 +37,68 @@ resources:
       Properties:
         CloudFrontOriginAccessIdentityConfig:
           Comment: ${self:custom.cdn.originAccessIdentity}
+
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${self:custom.domain.name}
+          CustomErrorResponses:
+            - ErrorCachingMinTTL: 300
+              ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: "/index.html"
+          Origins:
+            - Id: ${self:custom.cdn.originId}
+              DomainName:
+                Fn::GetAtt: [HostingBucket, DomainName]
+              S3OriginConfig:
+                OriginAccessIdentity: !Join ["", ["origin-access-identity/cloudfront/", Ref: OriginAccessIdentity]]
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - "GET"
+              - "HEAD"
+            CachedMethods:
+              - "GET"
+              - "HEAD"
+            Compress: true
+            DefaultTTL: 86400
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: false
+            MinTTL: 0
+            MaxTTL: 31536000
+            SmoothStreaming: false
+            TargetOriginId: ${self:custom.cdn.originId}
+            ViewerProtocolPolicy: "redirect-to-https"
+          DefaultRootObject: "index.html"
+          Enabled: true
+          HttpVersion: "http2"
+          IPV6Enabled: true
+          PriceClass: "PriceClass_All"
+          ViewerCertificate:
+            AcmCertificateArn: ${ssm:art.groffcole.com-certificate-arn~true}
+            MinimumProtocolVersion: "TLSv1.1_2016"
+            SslSupportMethod: "sni-only"
+
+    CloudFrontDistributionIdSecret:
+      Type: AWS::SecretsManager::Secret
+      Properties:
+        Name: ${self:custom.cdn.idSecretName}
+        SecretString:
+          Ref: CloudFrontDistribution
+
+    HostingBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${self:custom.hosting.bucketName}
+        PolicyDocument:
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                CanonicalUser: !GetAtt OriginAccessIdentity.S3CanonicalUserId
+              Action:
+                - "s3:GetObject"
+              Resource: !Join ["", ["arn:aws:s3:::", "${self:custom.hosting.bucketName}", "/*"]]
