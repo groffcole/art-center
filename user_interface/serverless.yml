@@ -1,5 +1,6 @@
-service: art-center-user-interface
+service: ui
 
 provider:
   name: aws
   stage: ${opt:stage}
+  stackName: art-center-user-interface-${self:provider.stage}
