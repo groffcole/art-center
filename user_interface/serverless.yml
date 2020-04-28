@@ -1,0 +1,13 @@
+service: art-center-user-interface
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+plugins:
+  - serverless-webpack
