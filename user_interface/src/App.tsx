@@ -11,7 +11,7 @@ function App() {
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
         <p>
-          hello, world.
+          hello, world. potato chips in the bag.
         </p>
         <a
           className="App-link"
