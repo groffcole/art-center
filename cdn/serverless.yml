@@ -1,4 +1,4 @@
-service: ui-cdn
+service: cdn
 
 provider:
   name: aws
