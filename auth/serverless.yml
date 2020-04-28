@@ -1,24 +1,39 @@
 service: auth
 
-custom:
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
-
-plugins:
-  - serverless-webpack
-
 provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage}
   stackName: art-center-auth-${self:provider.stage}
 
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  spaClient:
+    name: ${self:provider.stackName}-spa-client
+
+plugins:
+  - serverless-webpack
 
 functions:
-  hello:
-    handler: src/handler.hello
-    events:
-      - http:
-          method: get
-          path: hello
+  spaClientHandler:
+    handler: src/SpaClientHandler.handle
+
+resources:
+  Resources:
+    SPAClient:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [SpaClientHandlerLambdaFunction, Arn]
+        SPAClientName: ${self:custom.spaClient.name}
+        Stage: ${self:provider.stage}
+        Callbacks:
+          - "http://localhost:3000"
+        AllowedLogoutURLs:
+          - "http://localhost:3000"
+        WebOrigins:
+          - "http://localhost:3000"
+        AllowedOrigins:
+          - "http://localhost:3000"
