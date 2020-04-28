@@ -1,0 +1,29 @@
+service: art-center-user-interface-hosting
+
+provider:
+  name: aws
+  stage: ${opt:stage}
+
+custom:
+  hosting:
+    bucketName: ${self:service}-bucket-${self:provider.stage}
+
+resources:
+  Resources:
+    HostingBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.hosting.bucketName}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          IgnorePublicAcls: true
+          BlockPublicPolicy: true
+          RestrictPublicBuckets: true
+
+  Outputs:
+    HostingBucketName:
+      Value:
+        Ref: HostingBucket
+    HostingBucketDomainName:
+      Value:
+        Fn::GetAtt: [HostingBucket, DomainName]

@@ -1,0 +1,30 @@
+service: art-center-user-interface-cdn
+
+provider:
+  name: aws
+  stage: ${opt:stage}
+
+custom:
+  cdn:
+    idSecretName: ${self:service}-id-secret-name-${self:provider.stage}
+    originId: ${self:service}-origin-id-${self:provider.stage}
+    originAccessIdentity: ${self:service}-oai-${self:provider.stage}
+  domain:
+    name: ${self:custom.domain.options.${self:provider.stage}, self:custom.domain.options.other}
+    hostedZone: "groffcole.com."
+    options:
+      other: ${self:provider.stage}.dev.groffcole.com
+      dev: art.dev.groffcole.com
+      prod: art.groffcole.com
+  hosting:
+    stackName: art-center-user-interface-hosting-${self:provider.stage}
+    bucketName: ${cf:${self:custom.hostingStackName}.HostingBucketName}
+    bucketDomainName: ${cf:${self:custom.hostingStackName}.HostingBucketDomainName}
+
+resources:
+  Resources:
+    OriginAccessIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: ${self:custom.cdn.originAccessIdentity}
