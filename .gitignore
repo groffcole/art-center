@@ -3,3 +3,4 @@ vscode
 build
 .serverless
 .webpack
+.DS_Store
