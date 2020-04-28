@@ -125,4 +125,4 @@ resources:
           HostedZoneId: Z2FDTNDATAQYW2
         HostedZoneName: ${self:custom.domain.hostedZone}
         Name: ${self:custom.domain.name}
-        Type: "A"
+        Type: "AAAA"
