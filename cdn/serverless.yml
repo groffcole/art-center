@@ -103,7 +103,19 @@ resources:
                 - "s3:GetObject"
               Resource: !Join ["", ["arn:aws:s3:::", "${self:custom.hosting.bucketName}", "/*"]]
 
-    AliasRecordSet:
+    RecordSetA:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        AliasTarget:
+          DNSName:
+            Fn::GetAtt: [CloudFrontDistribution, DomainName]
+          EvaluateTargetHealth: false
+          HostedZoneId: Z2FDTNDATAQYW2
+        HostedZoneName: ${self:custom.domain.hostedZone}
+        Name: ${self:custom.domain.name}
+        Type: "A"
+
+    RecordSetAAAA:
       Type: AWS::Route53::RecordSet
       Properties:
         AliasTarget:
