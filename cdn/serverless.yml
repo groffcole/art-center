@@ -16,7 +16,7 @@ custom:
     name: ${self:custom.domain.options.${self:provider.stage}, self:custom.domain.options.other}
     hostedZone: "groffcole.com."
     options:
-      other: ${self:provider.stage}.dev.groffcole.com
+      other: ${self:provider.stage}.art.dev.groffcole.com
       dev: art.dev.groffcole.com
       prod: art.groffcole.com
 
