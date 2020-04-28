@@ -1,7 +1,7 @@
 after_deploy:
   - if [ $SEED_SERVICE_NAME = "ui" ]; then npm run build --prefix user_interface; fi
   - if [ $SEED_SERVICE_NAME = "ui" ]; then aws s3 sync user_interface/build/ s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --delete; fi
-  - if [ $SEED_SERVICE_NAME = "ui" ]; then echo 'export CDN_ID=$(aws secretsmanager get-secret-value --secret-id art-center-cdn-$SEED_STAGE_NAME-cdn-id-secret-name | jq -r "".SecretString")' >> $BASH_ENV; fi
+  - if [ $SEED_SERVICE_NAME = "ui" ]; then echo 'export CDN_ID=$(aws secretsmanager get-secret-value --secret-id art-center-cdn-$SEED_STAGE_NAME-cdn-id-secret-name | jq -r ".SecretString")' >> $BASH_ENV; fi
   - if [ $SEED_SERVICE_NAME = "ui" ]; then echo $CDN_ID; fi
   - if [ $SEED_SERVICE_NAME = "ui" ]; then aws cloudfront create-invalidation --distribution-id $(aws secretsmanager get-secret-value --secret-id art-center-cdn-$SEED_STAGE_NAME-cdn-id-secret-name | jq -r '.SecretString') --paths "/*"; fi
 
