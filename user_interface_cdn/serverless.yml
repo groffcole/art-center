@@ -1,14 +1,17 @@
-service: art-center-user-interface-cdn
+service: ui-cdn
 
 provider:
   name: aws
   stage: ${opt:stage}
+  stackName: art-center-user-interface-cdn-${self:provider.stage}
 
 custom:
+  hosting:
+    bucketName: ${self:provider.stackName}-hosting-bucket
   cdn:
-    idSecretName: ${self:service}-id-secret-name-${self:provider.stage}
-    originId: ${self:service}-origin-id-${self:provider.stage}
-    originAccessIdentity: ${self:service}-oai-${self:provider.stage}
+    idSecretName: ${self:provider.stackName}-cdn-id-secret-name
+    originId: ${self:provider.stackName}-cdn-origin-id
+    originAccessIdentity: ${self:provider.stackName}-cdn-oai
   domain:
     name: ${self:custom.domain.options.${self:provider.stage}, self:custom.domain.options.other}
     hostedZone: "groffcole.com."
@@ -16,13 +19,19 @@ custom:
       other: ${self:provider.stage}.dev.groffcole.com
       dev: art.dev.groffcole.com
       prod: art.groffcole.com
-  hosting:
-    stackName: art-center-user-interface-hosting-${self:provider.stage}
-    bucketName: ${cf:${self:custom.hostingStackName}.HostingBucketName}
-    bucketDomainName: ${cf:${self:custom.hostingStackName}.HostingBucketDomainName}
 
 resources:
   Resources:
+    HostingBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.hosting.bucketName}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          IgnorePublicAcls: true
+          BlockPublicPolicy: true
+          RestrictPublicBuckets: true
+
     OriginAccessIdentity:
       Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
       Properties:
