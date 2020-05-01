@@ -5,13 +5,31 @@ provider:
   runtime: nodejs12.x
   stage: ${opt:stage}
   stackName: art-center-auth-${self:provider.stage}
+  environment:
+    AUTH0_MANAGEMENT_CLIENT_ID_PARAM_NAME: ${self:custom.auth0.managementClient.id.paramName}
+    AUTH0_MANAGEMENT_CLIENT_SECRET_PARAM_NAME: ${self:custom.auth0.managementClient.secret.paramName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource:
+        - ${self:custom.auth0.managementClient.id.paramArn}
+        - ${self:custom.auth0ManagementClient.secret.ParamArn}
 
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+  auth0:
+    managementClient:
+      id:
+        paramName: "auth0-management-client-id"
+        paramArn: "arn:aws:ssm:us-east-2:${self:custom.awsAccountId}:parameter/${self:custom.auth0.managementClient.id.paramName}"
+      secret:
+        paramName: "auth0-management-client-secret"
+        paramArn: "arn:aws:ssm:us-east-2:${self:custom.awsAccountId}:parameter/${self:custom.auth0.managementClient.secret.paramName}"
   spaClient:
-    name: ${self:provider.stackName}-spa-client
+    name: "${self:provider.stackName}-spa-client"
 
 plugins:
   - serverless-webpack
@@ -20,20 +38,20 @@ functions:
   spaClientHandler:
     handler: src/SpaClientHandler.handle
 
-resources:
-  Resources:
-    SPAClient:
-      Type: AWS::CloudFormation::CustomResource
-      Properties:
-        ServiceToken:
-          Fn::GetAtt: [SpaClientHandlerLambdaFunction, Arn]
-        SPAClientName: ${self:custom.spaClient.name}
-        Stage: ${self:provider.stage}
-        Callbacks:
-          - "http://localhost:3000"
-        AllowedLogoutURLs:
-          - "http://localhost:3000"
-        WebOrigins:
-          - "http://localhost:3000"
-        AllowedOrigins:
-          - "http://localhost:3000"
+# resources:
+#   Resources:
+#     SPAClient:
+#       Type: AWS::CloudFormation::CustomResource
+#       Properties:
+#         ServiceToken:
+#           Fn::GetAtt: [SpaClientHandlerLambdaFunction, Arn]
+#         SPAClientName: ${self:custom.spaClient.name}
+#         Stage: ${self:provider.stage}
+#         Callbacks:
+#           - "http://localhost:3000"
+#         AllowedLogoutURLs:
+#           - "http://localhost:3000"
+#         WebOrigins:
+#           - "http://localhost:3000"
+#         AllowedOrigins:
+#           - "http://localhost:3000"
