@@ -37,7 +37,7 @@ plugins:
 
 functions:
   spaClientHandler:
-    handler: src/SpaClientHandler.handle
+    handler: src/service-tokens/spa-client/SpaClientHandler.handle
 
 # resources:
 #   Resources:

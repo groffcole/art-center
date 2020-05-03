@@ -3,21 +3,21 @@ import "source-map-support/register";
 import { createSpaClient } from "./events/Create";
 
 export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
-  try {
-    switch (event.RequestType) {
-      case "Create":
-        await createSpaClient(event);
-        break;
-      case "Update":
-        await updateSpaClient(event);
-        break;
-      case "Delete":
-        await deleteSpaClient(event);
-        break;
-    }
-  } catch (error) {
-    await handleSpaClientError(error, event, context);
-  }
+  // try {
+  //   switch (event.RequestType) {
+  //     case "Create":
+  //       await createSpaClient(event);
+  //       break;
+  //     case "Update":
+  //       await updateSpaClient(event);
+  //       break;
+  //     case "Delete":
+  //       await deleteSpaClient(event);
+  //       break;
+  //   }
+  // } catch (error) {
+  //   await handleSpaClientError(error, event, context);
+  // }
 };
 
 // export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
