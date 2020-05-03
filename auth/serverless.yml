@@ -14,7 +14,7 @@ provider:
         - ssm:GetParameter
       Resource:
         - ${self:custom.auth0.managementClient.id.paramArn}
-        - ${self:custom.auth0ManagementClient.secret.ParamArn}
+        - ${self:custom.auth0ManagementClient.secret.paramArn}
 
 custom:
   webpack:
