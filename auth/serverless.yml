@@ -24,15 +24,16 @@ custom:
     managementClient:
       id:
         paramName: "auth0-management-client-id"
-        paramArn: "arn:aws:ssm:us-east-2:${self:custom.awsAccountId}:parameter/${self:custom.auth0.managementClient.id.paramName}"
+        paramArn: "arn:aws:ssm:us-east-2:#{AWS::AccountId}:parameter/${self:custom.auth0.managementClient.id.paramName}"
       secret:
         paramName: "auth0-management-client-secret"
-        paramArn: "arn:aws:ssm:us-east-2:${self:custom.awsAccountId}:parameter/${self:custom.auth0.managementClient.secret.paramName}"
+        paramArn: "arn:aws:ssm:us-east-2:#{AWS::AccountId}:parameter/${self:custom.auth0.managementClient.secret.paramName}"
   spaClient:
     name: "${self:provider.stackName}-spa-client"
 
 plugins:
   - serverless-webpack
+  - serverless-pseudo-parameters
 
 functions:
   spaClientHandler:
