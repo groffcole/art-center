@@ -65,7 +65,7 @@ test("handle should handle errors", async () => {
 
   await handle(createEvent, context, undefined);
 
-  assertEventHandlingExpectations(0, 0, 0, 1);
+  assertEventHandlingExpectations(1, 0, 0, 1);
   expect(handleSpaClientError).toHaveBeenCalledWith(error, createEvent, context);
 });
 
