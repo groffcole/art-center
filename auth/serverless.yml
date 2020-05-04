@@ -46,11 +46,11 @@ functions:
 #       Properties:
 #         ServiceToken:
 #           Fn::GetAtt: [SpaClientHandlerLambdaFunction, Arn]
-#         SPAClientName: ${self:custom.spaClient.name}
+#         SpaClientName: ${self:custom.spaClient.name}
 #         Stage: ${self:provider.stage}
 #         Callbacks:
 #           - "http://localhost:3000"
-#         AllowedLogoutURLs:
+#         AllowedLogoutUrls:
 #           - "http://localhost:3000"
 #         WebOrigins:
 #           - "http://localhost:3000"

@@ -1,43 +1,50 @@
 import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
+import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
+import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
+import { ManagementClient } from "auth0";
 
-export const createSpaClient = async (event: CloudFormationCustomResourceCreateEvent) => {};
+export const createSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
+  const managementClient = await getAuth0ManagementClient();
+  const foundSpaClient = await attemptToGetExistingSpaClient(createEvent, managementClient);
+  let clientId: string;
 
+  if (foundSpaClient) {
+    clientId = foundSpaClient.client_id;
+  } else {
+    clientId = (await createAndReturnNewSpaClient(createEvent, managementClient)).client_id;
+  }
 
-// const createSPAClient = async (event, context) => {
-//   const managementClient = await InfrastructureUtility.getAuth0ManagementClient();
-//   const clients = await managementClient.getClients({ fields: ["client_id", "name"], include_fields: true, app_type: ["spa"] });
-//   const foundClient = clients.find((element) => element.name === event.ResourceProperties.SPAClientName);
+  await sendCloudFormationResponse(
+    createEvent.ResponseURL,
+    JSON.stringify({
+      Status: "SUCCESS",
+      RequestId: createEvent.RequestId,
+      LogicalResourceId: createEvent.LogicalResourceId,
+      StackId: createEvent.StackId,
+      PhysicalResourceId: clientId
+    })
+  );
+};
 
-//   let clientId;
+const attemptToGetExistingSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent, managementClient: ManagementClient) => {
+  const spaClients = await managementClient.getClients({ fields: ["client_id", "name"], include_fields: true, app_type: ["spa"] });
+  return spaClients.find((spaClient) => spaClient.name === createEvent.ResourceProperties.SpaClientName);
+};
 
-//   if (foundClient) {
-//     clientId = foundClient.client_id;
-//   } else {
-//     const spaClient = await managementClient.createClient({
-//       name: event.ResourceProperties.SPAClientName,
-//       app_type: "spa",
-//       callbacks: event.ResourceProperties.Callbacks,
-//       allowed_logout_urls: event.ResourceProperties.AllowedLogoutURLs,
-//       web_origins: event.ResourceProperties.WebOrigins,
-//       allowed_origins: event.ResourceProperties.AllowedOrigins,
-//       oidc_conformant: true,
-//       grant_types: ["authorization_code", "implicit", "refresh_token"],
-//       token_endpoint_auth_method: "none",
-//       jwt_configuration: {
-//         alg: "RS256",
-//         lifetime_in_seconds: 36000
-//       }
-//     });
-//     clientId = spaClient.client_id;
-//   }
-
-//   const createSpaClientResponseBody = {
-//     Status: "SUCCESS",
-//     RequestId: event.RequestId,
-//     LogicalResourceId: event.LogicalResourceId,
-//     StackId: event.StackId,
-//     PhysicalResourceId: clientId
-//   };
-
-//   await InfrastructureUtility.sendCloudFormationResponse(event.ResponseURL, createSpaClientResponseBody);
-// };
+const createAndReturnNewSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent, managementClient: ManagementClient) => {
+  return await managementClient.createClient({
+    name: createEvent.ResourceProperties.SpaClientName,
+    app_type: "spa",
+    callbacks: createEvent.ResourceProperties.Callbacks,
+    allowed_logout_urls: createEvent.ResourceProperties.AllowedLogoutUrls,
+    web_origins: createEvent.ResourceProperties.WebOrigins,
+    allowed_origins: createEvent.ResourceProperties.AllowedOrigins,
+    oidc_conformant: true,
+    grant_types: ["authorization_code", "implicit", "refresh_token"],
+    token_endpoint_auth_method: "none",
+    jwt_configuration: {
+      alg: "RS256",
+      lifetime_in_seconds: 36000
+    }
+  });
+};

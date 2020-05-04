@@ -1,23 +1,26 @@
 import { CloudFormationCustomResourceHandler } from "aws-lambda";
 import "source-map-support/register";
 import { createSpaClient } from "./events/Create";
+import { deleteSpaClient } from "./events/Delete";
+import { updateSpaClient } from "./events/Update";
+import { handleSpaClientError } from "./events/Error";
 
 export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
-  // try {
-  //   switch (event.RequestType) {
-  //     case "Create":
-  //       await createSpaClient(event);
-  //       break;
-  //     case "Update":
-  //       await updateSpaClient(event);
-  //       break;
-  //     case "Delete":
-  //       await deleteSpaClient(event);
-  //       break;
-  //   }
-  // } catch (error) {
-  //   await handleSpaClientError(error, event, context);
-  // }
+  try {
+    switch (event.RequestType) {
+      case "Create":
+        await createSpaClient(event);
+        break;
+      case "Update":
+        await updateSpaClient(event);
+        break;
+      case "Delete":
+        await deleteSpaClient(event);
+        break;
+    }
+  } catch (error) {
+    await handleSpaClientError(error, event, context);
+  }
 };
 
 // export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
@@ -83,4 +86,3 @@ export const handle: CloudFormationCustomResourceHandler = async (event, context
 //     PhysicalResourceId: event.PhysicalResourceId || context.logStreamName
 //   });
 // };
-
