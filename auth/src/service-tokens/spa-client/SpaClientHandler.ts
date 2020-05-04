@@ -47,26 +47,3 @@ export const handle: CloudFormationCustomResourceHandler = async (event, context
 //     });
 //   }
 // };
-
-// const updateSPAClient = async (event, context) => {
-//   const managementClient = await InfrastructureUtility.getAuth0ManagementClient();
-//   await managementClient.updateClient(
-//     {
-//       client_id: event.PhysicalResourceId
-//     },
-//     {
-//       callbacks: event.ResourceProperties.Callbacks,
-//       allowed_logout_urls: event.ResourceProperties.AllowedLogoutURLs,
-//       web_origins: event.ResourceProperties.WebOrigins,
-//       allowed_origins: event.ResourceProperties.AllowedOrigins
-//     }
-//   );
-
-//   await InfrastructureUtility.sendCloudFormationResponse(event.ResponseURL, {
-//     Status: "SUCCESS",
-//     RequestId: event.RequestId,
-//     LogicalResourceId: event.LogicalResourceId,
-//     StackId: event.StackId,
-//     PhysicalResourceId: event.PhysicalResourceId
-//   });
-// };

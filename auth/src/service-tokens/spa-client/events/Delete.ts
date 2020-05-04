@@ -1,11 +1,10 @@
 import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
-import { Stages } from "../../../utilities/domain/Stages";
+import { Stages } from "../../../domain/Stages";
 
 export const deleteSpaClient = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
-  if (deleteEvent.ResourceProperties.Stage === "dev" || deleteEvent.ResourceProperties.Stage === "prod" || deleteEvent.ResourceProperties.Stage === Stages.PRODUCTION) {
-  } else {
+  if (spaClientShouldBeDeleted(deleteEvent)) {
     const managementClient = await getAuth0ManagementClient();
     await managementClient.deleteClient({ client_id: deleteEvent.PhysicalResourceId });
   }
@@ -21,3 +20,6 @@ export const deleteSpaClient = async (deleteEvent: CloudFormationCustomResourceD
     })
   );
 };
+function spaClientShouldBeDeleted(deleteEvent: CloudFormationCustomResourceDeleteEvent) {
+  return deleteEvent.ResourceProperties.Stage !== Stages.DEVELOPMENT && deleteEvent.ResourceProperties.Stage !== Stages.PRODUCTION;
+}

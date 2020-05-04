@@ -28,13 +28,13 @@ const CREATE_EVENT: CloudFormationCustomResourceCreateEvent = {
 };
 
 test("createSpaClient should create a new spa client", async () => {
-  const managementClient = getMockedManagementClient([]);
-  mockedGetAuth0ManagementClient.mockImplementationOnce((): any => managementClient);
+  const mockedManagementClient = getMockedManagementClient([]);
+  mockedGetAuth0ManagementClient.mockImplementationOnce((): any => mockedManagementClient);
 
   await createSpaClient(CREATE_EVENT);
 
-  assertCommonManagementClientExpectations(managementClient, 1);
-  expect(managementClient.createClient).toHaveBeenCalledWith({
+  assertCommonManagementClientExpectations(mockedManagementClient, 1);
+  expect(mockedManagementClient.createClient).toHaveBeenCalledWith({
     name: CREATE_EVENT.ResourceProperties.SpaClientName,
     app_type: "spa",
     callbacks: CREATE_EVENT.ResourceProperties.Callbacks,
@@ -53,12 +53,12 @@ test("createSpaClient should create a new spa client", async () => {
 });
 
 test("createSpaClient should_not create a new spa client if one already exists", async () => {
-  const managementClient = getMockedManagementClient([{ name: CLIENT_NAME, client_id: CLIENT_ID }]);
-  mockedGetAuth0ManagementClient.mockImplementationOnce((): any => managementClient);
+  const mockedManagementClient = getMockedManagementClient([{ name: CLIENT_NAME, client_id: CLIENT_ID }]);
+  mockedGetAuth0ManagementClient.mockImplementationOnce((): any => mockedManagementClient);
 
   await createSpaClient(CREATE_EVENT);
 
-  assertCommonManagementClientExpectations(managementClient, 0);
+  assertCommonManagementClientExpectations(mockedManagementClient, 0);
   assertCloudFormationUtilityExpectations(CREATE_EVENT, CLIENT_ID);
 });
 
