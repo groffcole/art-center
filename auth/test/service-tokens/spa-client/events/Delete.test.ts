@@ -32,7 +32,7 @@ test("deleteSpaClient should_not delete the spa client for production stage", as
   const deleteEvent: CloudFormationCustomResourceDeleteEvent = createDeleteEvent(Stages.PRODUCTION);
   await deleteSpaClient(deleteEvent);
 
-  expect(getAuth0ManagementClient).toHaveBeenCalledTimes(1);
+  expect(getAuth0ManagementClient).toHaveBeenCalledTimes(0);
   expect(mockedManagementClient.deleteClient).toHaveBeenCalledTimes(0);
   assertCloudFormationUtilityExpectations(deleteEvent);
 });
@@ -42,7 +42,7 @@ test("deleteSpaClient should_not delete the spa client for development stage", a
 
   await deleteSpaClient(deleteEvent);
 
-  expect(getAuth0ManagementClient).toHaveBeenCalledTimes(1);
+  expect(getAuth0ManagementClient).toHaveBeenCalledTimes(0);
   expect(mockedManagementClient.deleteClient).toHaveBeenCalledTimes(0);
   assertCloudFormationUtilityExpectations(deleteEvent);
 });

@@ -4,17 +4,18 @@ import { createSpaClient } from "./events/Create";
 import { deleteSpaClient } from "./events/Delete";
 import { updateSpaClient } from "./events/Update";
 import { handleSpaClientError } from "./events/Error";
+import { CloudFormationEvents } from "../../domain/CloudFormationEvents";
 
 export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
   try {
     switch (event.RequestType) {
-      case "Create":
+      case CloudFormationEvents.CREATE:
         await createSpaClient(event);
         break;
-      case "Update":
+      case CloudFormationEvents.UPDATE:
         await updateSpaClient(event);
         break;
-      case "Delete":
+      case CloudFormationEvents.DELETE:
         await deleteSpaClient(event);
         break;
     }
@@ -22,28 +23,3 @@ export const handle: CloudFormationCustomResourceHandler = async (event, context
     await handleSpaClientError(error, event, context);
   }
 };
-
-// export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
-//   try {
-//     switch (event.RequestType) {
-//       case "Create":
-//         await createSPAClient(event, context);
-//         break;
-//       case "Update":
-//         await updateSPAClient(event, context);
-//         break;
-//       case "Delete":
-//         await deleteSPAClient(event, context);
-//         break;
-//     }
-//   } catch (error) {
-//     await InfrastructureUtility.sendCloudFormationResponse(event.ResponseURL, {
-//       Status: "FAILED",
-//       Reason: error.message,
-//       RequestId: event.RequestId,
-//       LogicalResourceId: event.LogicalResourceId,
-//       StackId: event.StackId,
-//       PhysicalResourceId: event.PhysicalResourceId || context.logStreamName
-//     });
-//   }
-// };
