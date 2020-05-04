@@ -5,11 +5,11 @@ import { ManagementClient } from "auth0";
 
 export const createSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
   const managementClient = await getAuth0ManagementClient();
-  const foundSpaClient = await attemptToGetExistingSpaClient(createEvent, managementClient);
+  const existingSpaClient = await attemptToGetExistingSpaClient(createEvent, managementClient);
   let clientId: string;
 
-  if (foundSpaClient) {
-    clientId = foundSpaClient.client_id;
+  if (existingSpaClient) {
+    clientId = existingSpaClient.client_id;
   } else {
     clientId = (await createAndReturnNewSpaClient(createEvent, managementClient)).client_id;
   }

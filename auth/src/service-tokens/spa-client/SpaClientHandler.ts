@@ -70,19 +70,3 @@ export const handle: CloudFormationCustomResourceHandler = async (event, context
 //     PhysicalResourceId: event.PhysicalResourceId
 //   });
 // };
-
-// const deleteSPAClient = async (event, context) => {
-//   if (event.ResourceProperties.Stage === "dev" || event.ResourceProperties.Stage === "prod") {
-//   } else {
-//     const managementClient = await InfrastructureUtility.getAuth0ManagementClient();
-//     await managementClient.deleteClient({ client_id: event.PhysicalResourceId });
-//   }
-
-//   await InfrastructureUtility.sendCloudFormationResponse(event.ResponseURL, {
-//     Status: "SUCCESS",
-//     RequestId: event.RequestId,
-//     LogicalResourceId: event.LogicalResourceId,
-//     StackId: event.StackId,
-//     PhysicalResourceId: event.PhysicalResourceId || context.logStreamName
-//   });
-// };
