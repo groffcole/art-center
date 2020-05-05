@@ -14,6 +14,8 @@ before_remove:
     then
       aws s3 rm s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --recursive
     fi
+
+after_remove:
   - |
     if [ $SEED_STAGE_NAME != "dev" ] && [ $SEED_STAGE_NAME != "prod" ]
     then
@@ -25,24 +27,8 @@ before_remove:
       echo $region
       echo AWS_DEFAULT_REGION:
       echo $AWS_DEFAULT_REGION
-      sleep 2m
       for logGroupName in $(aws logs describe-log-groups --region $AWS_DEFAULT_REGION --log-group-name-prefix $log_group_name_prefix | jq -c '.logGroups[].logGroupName' | tr -d \"); do
         echo log group name: ${logGroupName}
         aws logs delete-log-group --region $AWS_DEFAULT_REGION --log-group-name ${logGroupName}
       done
     fi
-
-# after_remove:
-#   - |
-#     if [ $SEED_STAGE_NAME != "dev" ] && [ $SEED_STAGE_NAME != "prod" ]
-#     then
-#       log_group_name_prefix=/aws/lambda/$SEED_SERVICE_NAME-$SEED_STAGE_NAME
-#       region=$(aws configure get region)
-#       echo $log_group_name_prefix
-#       echo $region
-#       sleep 5m
-#       for logGroupName in $(aws logs describe-log-groups --region $region --log-group-name-prefix $log_group_name_prefix | jq -c '.logGroups[].logGroupName' | tr -d \"); do
-#         echo log group name: ${logGroupName}
-#         aws logs delete-log-group --region $region --log-group-name ${logGroupName}
-#       done
-#     fi
