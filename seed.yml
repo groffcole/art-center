@@ -26,9 +26,9 @@ before_remove:
       echo AWS_DEFAULT_REGION:
       echo $AWS_DEFAULT_REGION
       sleep 2m
-      for logGroupName in $(aws logs describe-log-groups --region $region --log-group-name-prefix $log_group_name_prefix | jq -c '.logGroups[].logGroupName' | tr -d \"); do
+      for logGroupName in $(aws logs describe-log-groups --region $AWS_DEFAULT_REGION --log-group-name-prefix $log_group_name_prefix | jq -c '.logGroups[].logGroupName' | tr -d \"); do
         echo log group name: ${logGroupName}
-        aws logs delete-log-group --region $region --log-group-name ${logGroupName}
+        aws logs delete-log-group --region $AWS_DEFAULT_REGION --log-group-name ${logGroupName}
       done
     fi
 
