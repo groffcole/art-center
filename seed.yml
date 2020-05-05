@@ -4,4 +4,19 @@ after_deploy:
   - if [ $SEED_SERVICE_NAME = "ui" ]; then aws cloudfront create-invalidation --distribution-id $(aws secretsmanager get-secret-value --secret-id art-center-cdn-$SEED_STAGE_NAME-cdn-id-secret-name | jq -r '.SecretString') --paths "/*"; fi
 
 before_remove:
-  - if [ $SEED_SERVICE_NAME = "ui" ]; then aws s3 rm s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --recursive; fi
+  - |
+    if [ $SEED_SERVICE_NAME = "ui" ]; then
+      aws s3 rm s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --recursive
+    fi
+
+# after_remove:
+
+
+# /aws/lambda/$SEED_SERVICE_NAME-$SEED_STAGE_NAME
+
+# complete_prefix=/aws/lambda/<< parameters.log_group_prefix >>
+# echo log group prefix info - complete_prefix: ${complete_prefix}
+# for logGroupName in $(MSYS_NO_PATHCONV=1 aws logs describe-log-groups --region us-east-2 --log-group-name-prefix $(echo "$complete_prefix" | awk '{print tolower($0)}') | jq -c '.logGroups[].logGroupName' | tr -d \"); do
+#   echo log group name: ${logGroupName}
+#   MSYS_NO_PATHCONV=1 aws logs delete-log-group --region us-east-2 --log-group-name ${logGroupName}
+# done
