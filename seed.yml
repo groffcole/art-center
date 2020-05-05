@@ -19,9 +19,13 @@ before_remove:
     then
       log_group_name_prefix=/aws/lambda/$SEED_SERVICE_NAME-$SEED_STAGE_NAME
       region=$(aws configure get region)
+      echo log_group_name_prefix:
       echo $log_group_name_prefix
+      echo region:
       echo $region
-      sleep 5m
+      echo AWS_DEFAULT_REGION:
+      echo $AWS_DEFAULT_REGION
+      sleep 2m
       for logGroupName in $(aws logs describe-log-groups --region $region --log-group-name-prefix $log_group_name_prefix | jq -c '.logGroups[].logGroupName' | tr -d \"); do
         echo log group name: ${logGroupName}
         aws logs delete-log-group --region $region --log-group-name ${logGroupName}
