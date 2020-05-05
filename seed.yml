@@ -20,15 +20,7 @@ after_remove:
     if [ $SEED_STAGE_NAME != "dev" ] && [ $SEED_STAGE_NAME != "prod" ]
     then
       log_group_name_prefix=/aws/lambda/$SEED_SERVICE_NAME-$SEED_STAGE_NAME
-      region=$(aws configure get region)
-      echo log_group_name_prefix:
-      echo $log_group_name_prefix
-      echo region:
-      echo $region
-      echo AWS_DEFAULT_REGION:
-      echo $AWS_DEFAULT_REGION
       for logGroupName in $(aws logs describe-log-groups --region $AWS_DEFAULT_REGION --log-group-name-prefix $log_group_name_prefix | jq -c '.logGroups[].logGroupName' | tr -d \"); do
-        echo log group name: ${logGroupName}
         aws logs delete-log-group --region $AWS_DEFAULT_REGION --log-group-name ${logGroupName}
       done
     fi
