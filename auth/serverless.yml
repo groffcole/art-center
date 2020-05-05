@@ -39,20 +39,20 @@ functions:
   spaClientHandler:
     handler: src/service-tokens/spa-client/SpaClientHandler.handle
 
-# resources:
-#   Resources:
-#     SPAClient:
-#       Type: AWS::CloudFormation::CustomResource
-#       Properties:
-#         ServiceToken:
-#           Fn::GetAtt: [SpaClientHandlerLambdaFunction, Arn]
-#         SpaClientName: ${self:custom.spaClient.name}
-#         Stage: ${self:provider.stage}
-#         Callbacks:
-#           - "http://localhost:3000"
-#         AllowedLogoutUrls:
-#           - "http://localhost:3000"
-#         WebOrigins:
-#           - "http://localhost:3000"
-#         AllowedOrigins:
-#           - "http://localhost:3000"
+resources:
+  Resources:
+    SpaClient:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [SpaClientHandlerLambdaFunction, Arn]
+        SpaClientName: ${self:custom.spaClient.name}
+        Stage: ${self:provider.stage}
+        Callbacks:
+          - "http://localhost:3000"
+        AllowedLogoutUrls:
+          - "http://localhost:3000"
+        WebOrigins:
+          - "http://localhost:3000"
+        AllowedOrigins:
+          - "http://localhost:3000"
