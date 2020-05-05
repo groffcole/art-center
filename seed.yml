@@ -13,14 +13,11 @@ before_remove:
       aws s3 rm s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --recursive
     fi
 
-# after_remove:
-
-
-# /aws/lambda/$SEED_SERVICE_NAME-$SEED_STAGE_NAME
-
-# complete_prefix=/aws/lambda/<< parameters.log_group_prefix >>
-# echo log group prefix info - complete_prefix: ${complete_prefix}
-# for logGroupName in $(MSYS_NO_PATHCONV=1 aws logs describe-log-groups --region us-east-2 --log-group-name-prefix $(echo "$complete_prefix" | awk '{print tolower($0)}') | jq -c '.logGroups[].logGroupName' | tr -d \"); do
-#   echo log group name: ${logGroupName}
-#   MSYS_NO_PATHCONV=1 aws logs delete-log-group --region us-east-2 --log-group-name ${logGroupName}
-# done
+after_remove:
+  - |
+    log_group_name_prefix=/aws/lambda/$SEED_SERVICE_NAME-$SEED_STAGE_NAME
+    region=$(aws configure get region)
+    for logGroupName in $(aws logs describe-log-groups --region $region --log-group-name-prefix $log_group_name_prefix | jq -c '.logGroups[].logGroupName' | tr -d \"); do
+      echo log group name: ${logGroupName}
+      aws logs delete-log-group --region $region --log-group-name ${logGroupName}
+    done
