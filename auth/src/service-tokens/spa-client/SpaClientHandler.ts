@@ -3,8 +3,8 @@ import "source-map-support/register";
 import { createSpaClient } from "./events/Create";
 import { deleteSpaClient } from "./events/Delete";
 import { updateSpaClient } from "./events/Update";
-import { handleSpaClientError } from "./events/Error";
 import { CloudFormationEvents } from "../../domain/CloudFormationEvents";
+import { sendFailedResponse } from "../../utilities/CloudFormationUtility";
 
 export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
   try {
@@ -20,6 +20,6 @@ export const handle: CloudFormationCustomResourceHandler = async (event, context
         break;
     }
   } catch (error) {
-    await handleSpaClientError(error, event, context);
+    await sendFailedResponse(error, event, context);
   }
 };

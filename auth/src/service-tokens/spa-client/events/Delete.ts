@@ -4,6 +4,8 @@ import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { Stages } from "../../../domain/Stages";
 
 export const deleteSpaClient = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+  // what happens if the client doesn't exist when trying to delete it?
+
   if (spaClientShouldBeDeleted(deleteEvent)) {
     const managementClient = await getAuth0ManagementClient();
     await managementClient.deleteClient({ client_id: deleteEvent.PhysicalResourceId });

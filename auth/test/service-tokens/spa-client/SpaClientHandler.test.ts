@@ -4,12 +4,13 @@ import { mocked } from "ts-jest/utils";
 import { createSpaClient } from "../../../src/service-tokens/spa-client/events/Create";
 import { updateSpaClient } from "../../../src/service-tokens/spa-client/events/Update";
 import { deleteSpaClient } from "../../../src/service-tokens/spa-client/events/Delete";
-import { handleSpaClientError } from "../../../src/service-tokens/spa-client/events/Error";
 jest.mock("../../../src/service-tokens/spa-client/events/Create");
 jest.mock("../../../src/service-tokens/spa-client/events/Update");
 jest.mock("../../../src/service-tokens/spa-client/events/Delete");
-jest.mock("../../../src/service-tokens/spa-client/events/Error");
 const mockedCreateSpaClient = mocked(createSpaClient);
+
+import { sendFailedResponse } from "../../../src/utilities/CloudFormationUtility";
+jest.mock("../../../src/utilities/CloudFormationUtility");
 
 import { handle } from "../../../src/service-tokens/spa-client/SpaClientHandler";
 import { CloudFormationEvents } from "../../../src/domain/CloudFormationEvents";
@@ -66,12 +67,12 @@ test("handle should handle errors", async () => {
   await handle(createEvent, context, undefined);
 
   assertEventHandlingExpectations(1, 0, 0, 1);
-  expect(handleSpaClientError).toHaveBeenCalledWith(error, createEvent, context);
+  expect(sendFailedResponse).toHaveBeenCalledWith(error, createEvent, context);
 });
 
-const assertEventHandlingExpectations = (createCalls: number, updateCalls: number, deleteCalls: number, handleErrorCalls: number) => {
+const assertEventHandlingExpectations = (createCalls: number, updateCalls: number, deleteCalls: number, sendFailedResponseCalls: number) => {
   expect(createSpaClient).toHaveBeenCalledTimes(createCalls);
   expect(updateSpaClient).toHaveBeenCalledTimes(updateCalls);
   expect(deleteSpaClient).toHaveBeenCalledTimes(deleteCalls);
-  expect(handleSpaClientError).toHaveBeenCalledTimes(handleErrorCalls);
+  expect(sendFailedResponse).toHaveBeenCalledTimes(sendFailedResponseCalls);
 };

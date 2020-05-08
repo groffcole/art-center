@@ -4,7 +4,7 @@ import { mocked } from "ts-jest/utils";
 jest.mock("axios");
 const mockedAxiosPut = mocked(axios.put, true);
 
-import { sendCloudFormationResponse } from "../../src/utilities/CloudFormationUtility";
+import { sendCloudFormationResponse, sendFailedResponse } from "../../src/utilities/CloudFormationUtility";
 
 const RESPONSE_URL = "the response url";
 const RESPONSE_BODY = "the response body";
@@ -39,4 +39,68 @@ test("sendCloudFormationResponse should handle errors", async () => {
   expect(console.error).toHaveBeenCalledWith(
     `CloudFormationClient.sendCloudFormationResponse axios error: ${JSON.stringify(expectedError)}`
   );
+});
+
+// look at writing tests over the different Reason possibilities
+test("sendFailedResponse should send failed response to cloudformation with physical resource id", async () => {
+  const error: Error = new Error();
+  // @ts-ignore
+  const context: Context = "the context";
+  const event = {
+    ResponseURL: "the response url",
+    RequestId: "the request id",
+    LogicalResourceId: "the logical resource id",
+    StackId: "the stack id",
+    PhysicalResourceId: "the physical resource id"
+  };
+  const responseBody = JSON.stringify({
+    Status: "FAILED",
+    Reason: error.message || error.stack || `error processing event: ${JSON.stringify(event)}`,
+    RequestId: event.RequestId,
+    LogicalResourceId: event.LogicalResourceId,
+    StackId: event.StackId,
+    PhysicalResourceId: event.PhysicalResourceId
+  });
+
+  await sendFailedResponse(error, event, context);
+
+  expect(mockedAxiosPut).toHaveBeenCalledTimes(1);
+  expect(mockedAxiosPut).toHaveBeenCalledWith(event.ResponseURL, responseBody, {
+    headers: {
+      "content-type": "",
+      "content-length": responseBody.length
+    }
+  });
+});
+
+test("sendFailedResponse should send failed response to cloudformation with context log stream name", async () => {
+  const error: Error = new Error();
+  // @ts-ignore
+  const context: Context = {
+    logStreamName: "the log stream name"
+  };
+  const event = {
+    ResponseURL: "the response url",
+    RequestId: "the request id",
+    LogicalResourceId: "the logical resource id",
+    StackId: "the stack id"
+  };
+  const responseBody = JSON.stringify({
+    Status: "FAILED",
+    Reason: error.message || error.stack || `error processing event: ${JSON.stringify(event)}`,
+    RequestId: event.RequestId,
+    LogicalResourceId: event.LogicalResourceId,
+    StackId: event.StackId,
+    PhysicalResourceId: context.logStreamName
+  });
+
+  await sendFailedResponse(error, event, context);
+
+  expect(mockedAxiosPut).toHaveBeenCalledTimes(1);
+  expect(mockedAxiosPut).toHaveBeenCalledWith(event.ResponseURL, responseBody, {
+    headers: {
+      "content-type": "",
+      "content-length": responseBody.length
+    }
+  });
 });

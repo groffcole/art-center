@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Context } from "aws-lambda/handler";
 
 export const sendCloudFormationResponse = async (responseUrl: string, responseBody: string): Promise<void> => {
   try {
@@ -12,4 +13,18 @@ export const sendCloudFormationResponse = async (responseUrl: string, responseBo
     console.error(`CloudFormationClient.sendCloudFormationResponse axios error: ${JSON.stringify(error)}`);
     throw error;
   }
+};
+
+export const sendFailedResponse = async (error: Error, event: any, context: Context) => {
+  await sendCloudFormationResponse(
+    event.ResponseURL,
+    JSON.stringify({
+      Status: "FAILED",
+      Reason: error.message || error.stack || `error processing event: ${JSON.stringify(event)}`,
+      RequestId: event.RequestId,
+      LogicalResourceId: event.LogicalResourceId,
+      StackId: event.StackId,
+      PhysicalResourceId: event.PhysicalResourceId || context.logStreamName
+    })
+  );
 };
