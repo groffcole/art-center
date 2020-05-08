@@ -30,6 +30,8 @@ custom:
         paramArn: "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:custom.auth0.managementClient.secret.paramName}"
   spaClient:
     name: "${self:provider.stackName}-spa-client"
+  databaseConnection:
+    name: "${self:provider.stackName}-db-connection"
 
 plugins:
   - serverless-webpack
@@ -38,6 +40,8 @@ plugins:
 functions:
   spaClientHandler:
     handler: src/service-tokens/spa-client/SpaClientHandler.handle
+  databaseConnectionHandler:
+    handler: src/service-tokens/database-connection/DatabaseConnectionHandler.handle
 
 resources:
   Resources:
@@ -56,3 +60,13 @@ resources:
           - "http://localhost:3000"
         AllowedOrigins:
           - "http://localhost:3000"
+
+    DatabaseConnection:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [DatabaseConnectionHandlerLambdaFunction, Arn]
+        DatabaseConnectionName: ${self:custom.databaseConnection.name}
+        Stage: ${self:provider.stage}
+        SpaClientId:
+          Ref: SpaClient
