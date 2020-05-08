@@ -29,7 +29,7 @@ const CREATE_EVENT: CloudFormationCustomResourceCreateEvent = {
 
 test("createSpaClient should create a new spa client", async () => {
   const mockedManagementClient = getMockedManagementClient([]);
-  mockedGetAuth0ManagementClient.mockImplementationOnce((): any => mockedManagementClient);
+  mockManagementClientImplementations(mockedManagementClient);
 
   await createSpaClient(CREATE_EVENT);
 
@@ -49,17 +49,17 @@ test("createSpaClient should create a new spa client", async () => {
       lifetime_in_seconds: 36000
     }
   });
-  assertCloudFormationUtilityExpectations(CREATE_EVENT, CLIENT_ID);
+  assertCommonCloudFormationUtilityExpectations(CREATE_EVENT, CLIENT_ID);
 });
 
 test("createSpaClient should_not create a new spa client if one already exists", async () => {
   const mockedManagementClient = getMockedManagementClient([{ name: CLIENT_NAME, client_id: CLIENT_ID }]);
-  mockedGetAuth0ManagementClient.mockImplementationOnce((): any => mockedManagementClient);
+  mockManagementClientImplementations(mockedManagementClient);
 
   await createSpaClient(CREATE_EVENT);
 
   assertCommonManagementClientExpectations(mockedManagementClient, 0);
-  assertCloudFormationUtilityExpectations(CREATE_EVENT, CLIENT_ID);
+  assertCommonCloudFormationUtilityExpectations(CREATE_EVENT, CLIENT_ID);
 });
 
 const assertCommonManagementClientExpectations = (managementClient: any, numberOfExpectedCreateClientCalls: number) => {
@@ -73,7 +73,7 @@ const assertCommonManagementClientExpectations = (managementClient: any, numberO
   expect(managementClient.createClient).toHaveBeenCalledTimes(numberOfExpectedCreateClientCalls);
 };
 
-const assertCloudFormationUtilityExpectations = (createEvent: CloudFormationCustomResourceCreateEvent, clientId: string) => {
+const assertCommonCloudFormationUtilityExpectations = (createEvent: CloudFormationCustomResourceCreateEvent, clientId: string) => {
   expect(sendCloudFormationResponse).toHaveBeenCalledTimes(1);
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     createEvent.ResponseURL,
@@ -92,4 +92,8 @@ const getMockedManagementClient = (expectedClients: any) => {
     getClients: jest.fn().mockReturnValueOnce(expectedClients),
     createClient: jest.fn().mockReturnValueOnce({ client_id: CLIENT_ID })
   };
+};
+
+const mockManagementClientImplementations = (managementClient: any) => {
+  mockedGetAuth0ManagementClient.mockImplementationOnce((): any => managementClient);
 };

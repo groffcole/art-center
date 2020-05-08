@@ -22,19 +22,19 @@ export const createDatabaseConnection = async (createEvent: CloudFormationCustom
     });
 
     databaseConnectionId = createdDatabaseConnection.id;
-
-    await sendCloudFormationResponse(
-      createEvent.ResponseURL,
-      JSON.stringify({
-        Status: "SUCCESS",
-        RequestId: createEvent.RequestId,
-        LogicalResourceId: createEvent.LogicalResourceId,
-        StackId: createEvent.StackId,
-        PhysicalResourceId: databaseConnectionId,
-        Data: {
-          Name: createEvent.ResourceProperties.DatabaseConnectionName
-        }
-      })
-    );
   }
+
+  await sendCloudFormationResponse(
+    createEvent.ResponseURL,
+    JSON.stringify({
+      Status: "SUCCESS",
+      RequestId: createEvent.RequestId,
+      LogicalResourceId: createEvent.LogicalResourceId,
+      StackId: createEvent.StackId,
+      PhysicalResourceId: databaseConnectionId,
+      Data: {
+        Name: createEvent.ResourceProperties.DatabaseConnectionName
+      }
+    })
+  );
 };
