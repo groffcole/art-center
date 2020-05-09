@@ -13,6 +13,7 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { updateSpaClient } from "../../../../src/service-tokens/spa-client/events/Update";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 
 test("updateSpaClient should update the spa client", async () => {
   const updateEvent: CloudFormationCustomResourceUpdateEvent = {
@@ -57,7 +58,7 @@ const assertCloudFormationUtilityExpectations = (updateEvent: CloudFormationCust
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     updateEvent.ResponseURL,
     JSON.stringify({
-      Status: "SUCCESS",
+      Status: CloudFormationStatus.SUCCESS,
       RequestId: updateEvent.RequestId,
       LogicalResourceId: updateEvent.LogicalResourceId,
       StackId: updateEvent.StackId,

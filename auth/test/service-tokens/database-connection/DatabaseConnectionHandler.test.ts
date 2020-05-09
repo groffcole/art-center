@@ -2,18 +2,18 @@ import { Context } from "aws-lambda/handler";
 import { mocked } from "ts-jest/utils";
 import { CloudFormationEvents } from "../../../src/domain/CloudFormationEvents";
 
-import { createSpaClient } from "../../../src/service-tokens/spa-client/events/Create";
-import { updateSpaClient } from "../../../src/service-tokens/spa-client/events/Update";
-import { deleteSpaClient } from "../../../src/service-tokens/spa-client/events/Delete";
-jest.mock("../../../src/service-tokens/spa-client/events/Create");
-jest.mock("../../../src/service-tokens/spa-client/events/Update");
-jest.mock("../../../src/service-tokens/spa-client/events/Delete");
-const mockedCreateSpaClient = mocked(createSpaClient);
+import { createDatabaseConnection } from "../../../src/service-tokens/database-connection/events/Create";
+import { updateDatabaseConnection } from "../../../src/service-tokens/database-connection/events/Update";
+import { deleteDatabaseConnection } from "../../../src/service-tokens/database-connection/events/Delete";
+jest.mock("../../../src/service-tokens/database-connection/events/Create");
+jest.mock("../../../src/service-tokens/database-connection/events/Update");
+jest.mock("../../../src/service-tokens/database-connection/events/Delete");
+const mockedCreateDatabaseConnection = mocked(createDatabaseConnection);
 
 import { sendFailedResponse } from "../../../src/utilities/CloudFormationUtility";
 jest.mock("../../../src/utilities/CloudFormationUtility");
 
-import { handle } from "../../../src/service-tokens/spa-client/SpaClientHandler";
+import { handle } from "../../../src/service-tokens/database-connection/DatabaseConnectionHandler";
 
 // @ts-ignore
 const THE_CONTEXT: Context = jest.fn();
@@ -60,7 +60,7 @@ test("handle should handle errors", async () => {
   const context: Context = "the context";
   const error: Error = new Error();
 
-  mockedCreateSpaClient.mockImplementationOnce(() => {
+  mockedCreateDatabaseConnection.mockImplementationOnce(() => {
     throw error;
   });
 
@@ -71,8 +71,8 @@ test("handle should handle errors", async () => {
 });
 
 const assertEventHandlingExpectations = (createCalls: number, updateCalls: number, deleteCalls: number, sendFailedResponseCalls: number) => {
-  expect(createSpaClient).toHaveBeenCalledTimes(createCalls);
-  expect(updateSpaClient).toHaveBeenCalledTimes(updateCalls);
-  expect(deleteSpaClient).toHaveBeenCalledTimes(deleteCalls);
+  expect(createDatabaseConnection).toHaveBeenCalledTimes(createCalls);
+  expect(updateDatabaseConnection).toHaveBeenCalledTimes(updateCalls);
+  expect(deleteDatabaseConnection).toHaveBeenCalledTimes(deleteCalls);
   expect(sendFailedResponse).toHaveBeenCalledTimes(sendFailedResponseCalls);
 };

@@ -1,22 +1,22 @@
 import { CloudFormationCustomResourceHandler } from "aws-lambda";
 import "source-map-support/register";
-import { createSpaClient } from "./events/Create";
-import { deleteSpaClient } from "./events/Delete";
-import { updateSpaClient } from "./events/Update";
 import { CloudFormationEvents } from "../../domain/CloudFormationEvents";
+import { createDatabaseConnection } from "./events/Create";
+import { updateDatabaseConnection } from "./events/Update";
+import { deleteDatabaseConnection } from "./events/Delete";
 import { sendFailedResponse } from "../../utilities/CloudFormationUtility";
 
 export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
   try {
     switch (event.RequestType) {
       case CloudFormationEvents.CREATE:
-        await createSpaClient(event);
+        await createDatabaseConnection(event);
         break;
       case CloudFormationEvents.UPDATE:
-        await updateSpaClient(event);
+        await updateDatabaseConnection(event);
         break;
       case CloudFormationEvents.DELETE:
-        await deleteSpaClient(event);
+        await deleteDatabaseConnection(event);
         break;
     }
   } catch (error) {

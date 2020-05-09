@@ -1,12 +1,12 @@
 import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
-import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
+import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { Stages } from "../../../domain/Stages";
 import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
 
-export const deleteSpaClient = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
-  if (spaClientShouldBeDeleted(deleteEvent)) {
-    await deleteTheSpaClient(deleteEvent);
+export const deleteDatabaseConnection = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+  if (databaseConnectionShouldBeDeleted(deleteEvent)) {
+    await deleteTheDatabaseConnection(deleteEvent);
   }
 
   await sendCloudFormationResponse(
@@ -21,11 +21,13 @@ export const deleteSpaClient = async (deleteEvent: CloudFormationCustomResourceD
   );
 };
 
-const spaClientShouldBeDeleted = (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+const databaseConnectionShouldBeDeleted = (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
   return deleteEvent.ResourceProperties.Stage !== Stages.DEVELOPMENT && deleteEvent.ResourceProperties.Stage !== Stages.PRODUCTION;
 };
 
-const deleteTheSpaClient = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+const deleteTheDatabaseConnection = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
   const managementClient = await getAuth0ManagementClient();
-  await managementClient.deleteClient({ client_id: deleteEvent.PhysicalResourceId });
+  await managementClient.deleteConnection({
+    id: deleteEvent.PhysicalResourceId
+  });
 };

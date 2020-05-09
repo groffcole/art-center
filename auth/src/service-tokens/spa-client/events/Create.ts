@@ -2,6 +2,7 @@ import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/clou
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { ManagementClient } from "auth0";
+import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
 
 export const createSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
   const managementClient = await getAuth0ManagementClient();
@@ -17,7 +18,7 @@ export const createSpaClient = async (createEvent: CloudFormationCustomResourceC
   await sendCloudFormationResponse(
     createEvent.ResponseURL,
     JSON.stringify({
-      Status: "SUCCESS",
+      Status: CloudFormationStatus.SUCCESS,
       RequestId: createEvent.RequestId,
       LogicalResourceId: createEvent.LogicalResourceId,
       StackId: createEvent.StackId,
@@ -27,8 +28,8 @@ export const createSpaClient = async (createEvent: CloudFormationCustomResourceC
 };
 
 const attemptToGetExistingSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent, managementClient: ManagementClient) => {
-  const spaClients = await managementClient.getClients({ fields: ["client_id", "name"], include_fields: true, app_type: ["spa"] });
-  return spaClients.find((spaClient) => spaClient.name === createEvent.ResourceProperties.SpaClientName);
+  const existingSpaClients = await managementClient.getClients({ fields: ["client_id", "name"], include_fields: true, app_type: ["spa"] });
+  return existingSpaClients.find((spaClient) => spaClient.name === createEvent.ResourceProperties.SpaClientName);
 };
 
 const createAndReturnNewSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent, managementClient: ManagementClient) => {
