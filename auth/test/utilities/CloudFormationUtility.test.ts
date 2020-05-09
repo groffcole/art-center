@@ -1,11 +1,11 @@
 import axios from "axios";
 import { mocked } from "ts-jest/utils";
+import { CloudFormationStatus } from "../../src/domain/CloudFormationStatus";
 
 jest.mock("axios");
 const mockedAxiosPut = mocked(axios.put, true);
 
 import { sendCloudFormationResponse, sendFailedResponse } from "../../src/utilities/CloudFormationUtility";
-import { CloudFormationStatus } from "../../src/domain/CloudFormationStatus";
 
 const RESPONSE_URL = "the response url";
 const RESPONSE_BODY = "the response body";
