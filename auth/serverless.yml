@@ -48,7 +48,7 @@ functions:
     handler: src/service-tokens/spa-client/SpaClientHandler.handle
   databaseConnectionHandler:
     handler: src/service-tokens/database-connection/DatabaseConnectionHandler.handle
-  resourceServer:
+  resourceServerHandler:
     handler: src/service-tokens/resource-server/ResourceServerHandler.handle
 
 resources:
