@@ -14,6 +14,7 @@ jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { deleteSpaClient } from "../../../../src/service-tokens/spa-client/events/Delete";
 import { Stages } from "../../../../src/domain/Stages";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 
 test("deleteSpaClient should delete the spa client", async () => {
   const deleteEvent: CloudFormationCustomResourceDeleteEvent = createDeleteEvent("the stage");
@@ -67,7 +68,7 @@ const assertCommonCloudFormationUtilityExpectations = (deleteEvent: CloudFormati
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     deleteEvent.ResponseURL,
     JSON.stringify({
-      Status: "SUCCESS",
+      Status: CloudFormationStatus.SUCCESS,
       RequestId: deleteEvent.RequestId,
       LogicalResourceId: deleteEvent.LogicalResourceId,
       StackId: deleteEvent.StackId,

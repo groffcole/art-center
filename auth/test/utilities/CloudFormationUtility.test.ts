@@ -5,6 +5,7 @@ jest.mock("axios");
 const mockedAxiosPut = mocked(axios.put, true);
 
 import { sendCloudFormationResponse, sendFailedResponse } from "../../src/utilities/CloudFormationUtility";
+import { CloudFormationStatus } from "../../src/domain/CloudFormationStatus";
 
 const RESPONSE_URL = "the response url";
 const RESPONSE_BODY = "the response body";
@@ -41,7 +42,6 @@ test("sendCloudFormationResponse should handle errors", async () => {
   );
 });
 
-// look at writing tests over the different Reason possibilities
 test("sendFailedResponse should send failed response to cloudformation with physical resource id", async () => {
   const error: Error = new Error();
   // @ts-ignore
@@ -54,7 +54,7 @@ test("sendFailedResponse should send failed response to cloudformation with phys
     PhysicalResourceId: "the physical resource id"
   };
   const responseBody = JSON.stringify({
-    Status: "FAILED",
+    Status: CloudFormationStatus.FAILED,
     Reason: error.message || error.stack || `error processing event: ${JSON.stringify(event)}`,
     RequestId: event.RequestId,
     LogicalResourceId: event.LogicalResourceId,
@@ -86,13 +86,116 @@ test("sendFailedResponse should send failed response to cloudformation with cont
     StackId: "the stack id"
   };
   const responseBody = JSON.stringify({
-    Status: "FAILED",
+    Status: CloudFormationStatus.FAILED,
     Reason: error.message || error.stack || `error processing event: ${JSON.stringify(event)}`,
     RequestId: event.RequestId,
     LogicalResourceId: event.LogicalResourceId,
     StackId: event.StackId,
     PhysicalResourceId: context.logStreamName
   });
+
+  await sendFailedResponse(error, event, context);
+
+  expect(mockedAxiosPut).toHaveBeenCalledTimes(1);
+  expect(mockedAxiosPut).toHaveBeenCalledWith(event.ResponseURL, responseBody, {
+    headers: {
+      "content-type": "",
+      "content-length": responseBody.length
+    }
+  });
+});
+
+test("sendFailedResponse should send failed response to cloudformation with error.message", async () => {
+  const expectedErrorMessage = "the error message";
+  const error: Error = new Error(expectedErrorMessage);
+  // @ts-ignore
+  const context: Context = {
+    logStreamName: "the log stream name"
+  };
+  const event = {
+    ResponseURL: "the response url",
+    RequestId: "the request id",
+    LogicalResourceId: "the logical resource id",
+    StackId: "the stack id"
+  };
+  const responseBody = JSON.stringify({
+    Status: CloudFormationStatus.FAILED,
+    Reason: expectedErrorMessage,
+    RequestId: event.RequestId,
+    LogicalResourceId: event.LogicalResourceId,
+    StackId: event.StackId,
+    PhysicalResourceId: context.logStreamName
+  });
+
+  await sendFailedResponse(error, event, context);
+
+  expect(mockedAxiosPut).toHaveBeenCalledTimes(1);
+  expect(mockedAxiosPut).toHaveBeenCalledWith(event.ResponseURL, responseBody, {
+    headers: {
+      "content-type": "",
+      "content-length": responseBody.length
+    }
+  });
+});
+
+test("sendFailedResponse should send failed response to cloudformation with error.stack", async () => {
+  const expectedErrorStack = "the expected error stack";
+  const error: Error = new Error();
+  error.stack = expectedErrorStack;
+
+  // @ts-ignore
+  const context: Context = {
+    logStreamName: "the log stream name"
+  };
+  const event = {
+    ResponseURL: "the response url",
+    RequestId: "the request id",
+    LogicalResourceId: "the logical resource id",
+    StackId: "the stack id"
+  };
+  const responseBody = JSON.stringify({
+    Status: CloudFormationStatus.FAILED,
+    Reason: expectedErrorStack,
+    RequestId: event.RequestId,
+    LogicalResourceId: event.LogicalResourceId,
+    StackId: event.StackId,
+    PhysicalResourceId: context.logStreamName
+  });
+
+  await sendFailedResponse(error, event, context);
+
+  expect(mockedAxiosPut).toHaveBeenCalledTimes(1);
+  expect(mockedAxiosPut).toHaveBeenCalledWith(event.ResponseURL, responseBody, {
+    headers: {
+      "content-type": "",
+      "content-length": responseBody.length
+    }
+  });
+});
+test("sendFailedResponse should send failed response to cloudformation with custom error message", async () => {
+  const error: Error = new Error();
+  error.stack = undefined;
+  
+  // @ts-ignore
+  const context: Context = {
+    logStreamName: "the log stream name"
+  };
+  const event = {
+    ResponseURL: "the response url",
+    RequestId: "the request id",
+    LogicalResourceId: "the logical resource id",
+    StackId: "the stack id"
+  };
+  const expectedReason = `error processing event: ${JSON.stringify(event)}`
+  const responseBody = JSON.stringify({
+    Status: CloudFormationStatus.FAILED,
+    Reason: expectedReason,
+    RequestId: event.RequestId,
+    LogicalResourceId: event.LogicalResourceId,
+    StackId: event.StackId,
+    PhysicalResourceId: context.logStreamName
+  });
+  
 
   await sendFailedResponse(error, event, context);
 
