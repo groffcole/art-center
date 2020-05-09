@@ -14,6 +14,7 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { deleteDatabaseConnection } from "../../../../src/service-tokens/database-connection/events/Delete";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 
 test("deleteDatabaseConnection should delete the database connection", async () => {
   const deleteEvent = createDeleteEvent("the stage");
@@ -53,7 +54,7 @@ const assertCommonCloudFormationUtilityExpectations = (deleteEvent: CloudFormati
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     deleteEvent.ResponseURL,
     JSON.stringify({
-      Status: "SUCCESS",
+      Status: CloudFormationStatus.SUCCESS,
       RequestId: deleteEvent.RequestId,
       LogicalResourceId: deleteEvent.LogicalResourceId,
       StackId: deleteEvent.StackId,

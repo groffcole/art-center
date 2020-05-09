@@ -10,6 +10,7 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { createDatabaseConnection } from "../../../../src/service-tokens/database-connection/events/Create";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 
 const MANAGEMENT_CLIENT_ID = "the management client id";
 const DATABASE_CONNECTION_ID = "the database connection id";
@@ -69,7 +70,7 @@ const assertCommonCloudFormationUtilityExpectations = () => {
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     CREATE_EVENT.ResponseURL,
     JSON.stringify({
-      Status: "SUCCESS",
+      Status: CloudFormationStatus.SUCCESS,
       RequestId: CREATE_EVENT.RequestId,
       LogicalResourceId: CREATE_EVENT.LogicalResourceId,
       StackId: CREATE_EVENT.StackId,

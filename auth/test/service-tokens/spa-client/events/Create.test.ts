@@ -9,6 +9,7 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { createSpaClient } from "../../../../src/service-tokens/spa-client/events/Create";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 
 const CLIENT_NAME = "the client name";
 const CLIENT_ID = "the client id";
@@ -78,7 +79,7 @@ const assertCommonCloudFormationUtilityExpectations = (createEvent: CloudFormati
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     createEvent.ResponseURL,
     JSON.stringify({
-      Status: "SUCCESS",
+      Status: CloudFormationStatus.SUCCESS,
       RequestId: createEvent.RequestId,
       LogicalResourceId: createEvent.LogicalResourceId,
       StackId: createEvent.StackId,

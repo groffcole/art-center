@@ -1,5 +1,6 @@
 import { Context } from "aws-lambda/handler";
 import { mocked } from "ts-jest/utils";
+import { CloudFormationEvents } from "../../../src/domain/CloudFormationEvents";
 
 import { createSpaClient } from "../../../src/service-tokens/spa-client/events/Create";
 import { updateSpaClient } from "../../../src/service-tokens/spa-client/events/Update";
@@ -13,7 +14,6 @@ import { sendFailedResponse } from "../../../src/utilities/CloudFormationUtility
 jest.mock("../../../src/utilities/CloudFormationUtility");
 
 import { handle } from "../../../src/service-tokens/spa-client/SpaClientHandler";
-import { CloudFormationEvents } from "../../../src/domain/CloudFormationEvents";
 
 // @ts-ignore
 const THE_CONTEXT: Context = jest.fn();
