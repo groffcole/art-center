@@ -4,7 +4,7 @@ import { CloudFormationEvents } from "../../domain/CloudFormationEvents";
 import { createDatabaseConnection } from "./events/Create";
 import { updateDatabaseConnection } from "./events/Update";
 import { deleteDatabaseConnection } from "./events/Delete";
-import { handleDatabaseConnectionError } from "./events/Error";
+import { sendFailedResponse } from "../../utilities/CloudFormationUtility";
 
 export const handle: CloudFormationCustomResourceHandler = async (event, context) => {
   try {
@@ -20,6 +20,6 @@ export const handle: CloudFormationCustomResourceHandler = async (event, context
         break;
     }
   } catch (error) {
-    await handleDatabaseConnectionError(error, event, context);
+    await sendFailedResponse(error, event, context);
   }
 };
