@@ -42,10 +42,9 @@ const createAndReturnNewDatabaseConnection = async (
   createEvent: CloudFormationCustomResourceCreateEvent,
   managementClient: ManagementClient
 ) => {
-  const managementClientId = await getAuth0MangementClientId();
   return await managementClient.createConnection({
     name: createEvent.ResourceProperties.DatabaseConnectionName,
     strategy: "auth0",
-    enabled_clients: [managementClientId, createEvent.ResourceProperties.SpaClientId]
+    enabled_clients: [await getAuth0MangementClientId(), createEvent.ResourceProperties.SpaClientId]
   });
 };
