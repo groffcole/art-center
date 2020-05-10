@@ -1,20 +1,20 @@
 import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
-import { mocked } from "ts-jest/utils";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 import { Stages } from "../../../../src/domain/Stages";
+import { mocked } from "ts-jest/utils";
 
 import { getAuth0ManagementClient } from "../../../../src/utilities/Auth0Utility";
 jest.mock("../../../../src/utilities/Auth0Utility");
 const mockedGetAuth0ManagementClient = mocked(getAuth0ManagementClient);
 const mockedManagementClient = {
-  deleteConnection: jest.fn()
+  deleteResourceServer: jest.fn()
 };
 mockedGetAuth0ManagementClient.mockImplementation((): any => mockedManagementClient);
 
 import { sendCloudFormationResponse } from "../../../../src/utilities/CloudFormationUtility";
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
-import { deleteDatabaseConnection } from "../../../../src/service-tokens/database-connection/events/Delete";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
+import { deleteResourceServer } from "../../../../src/service-tokens/resource-server/events/Delete";
 
 const DELETE_EVENT: CloudFormationCustomResourceDeleteEvent = {
   PhysicalResourceId: "the physical resource id",
@@ -28,34 +28,34 @@ const DELETE_EVENT: CloudFormationCustomResourceDeleteEvent = {
   }
 };
 
-test("deleteDatabaseConnection should delete the database connection", async () => {
-  await deleteDatabaseConnection(DELETE_EVENT);
+test("deleteResourceServer should delete the resource server", async () => {
+  await deleteResourceServer(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(1);
-  expect(mockedManagementClient.deleteConnection).toHaveBeenCalledTimes(1);
-  expect(mockedManagementClient.deleteConnection).toHaveBeenCalledWith({
+  expect(mockedManagementClient.deleteResourceServer).toHaveBeenCalledTimes(1);
+  expect(mockedManagementClient.deleteResourceServer).toHaveBeenCalledWith({
     id: DELETE_EVENT.PhysicalResourceId
   });
   assertCommonCloudFormationUtilityExpectations();
 });
 
-test("deleteDatabaseConnection should_not delete the database connection for the production stage", async () => {
+test("deleteResourceServer should_not delete the resource server for the development stage", async () => {
   DELETE_EVENT.ResourceProperties.Stage = Stages.PRODUCTION;
 
-  await deleteDatabaseConnection(DELETE_EVENT);
+  await deleteResourceServer(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(0);
-  expect(mockedManagementClient.deleteConnection).toHaveBeenCalledTimes(0);
+  expect(mockedManagementClient.deleteResourceServer).toHaveBeenCalledTimes(0);
   assertCommonCloudFormationUtilityExpectations();
 });
 
-test("deleteDatabaseConnection should_not delete the database connection for the development stage", async () => {
+test("deleteResourceServer should_not delete the resource server for the development stage", async () => {
   DELETE_EVENT.ResourceProperties.Stage = Stages.DEVELOPMENT;
 
-  await deleteDatabaseConnection(DELETE_EVENT);
+  await deleteResourceServer(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(0);
-  expect(mockedManagementClient.deleteConnection).toHaveBeenCalledTimes(0);
+  expect(mockedManagementClient.deleteResourceServer).toHaveBeenCalledTimes(0);
   assertCommonCloudFormationUtilityExpectations();
 });
 

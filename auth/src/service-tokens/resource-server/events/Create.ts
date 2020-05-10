@@ -3,7 +3,6 @@ import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
 
-// @ts-ignore
 export const createResourceServer = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
   const managementClient = await getAuth0ManagementClient();
   const existingResourceServers = await managementClient.getResourceServers();
