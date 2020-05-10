@@ -4,10 +4,8 @@ import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUti
 import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
 
 export const deleteResourceServer = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
-  if (deleteEvent.ResourceProperties.Stage === "dev" || deleteEvent.ResourceProperties.Stage === "prod") {
-  } else {
-    const managementClient = await getAuth0ManagementClient();
-    await managementClient.deleteResourceServer({ id: deleteEvent.PhysicalResourceId });
+  if (resourceServerShouldBeDeleted(deleteEvent)) {
+    await deleteTheResourceServer(deleteEvent);
   }
 
   await sendCloudFormationResponse(
@@ -20,4 +18,13 @@ export const deleteResourceServer = async (deleteEvent: CloudFormationCustomReso
       PhysicalResourceId: deleteEvent.PhysicalResourceId
     })
   );
+};
+
+const resourceServerShouldBeDeleted = (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+  return deleteEvent.ResourceProperties.Stage !== "dev" && deleteEvent.ResourceProperties.Stage !== "prod";
+};
+
+const deleteTheResourceServer = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+  const managementClient = await getAuth0ManagementClient();
+  await managementClient.deleteResourceServer({ id: deleteEvent.PhysicalResourceId });
 };
