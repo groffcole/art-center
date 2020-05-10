@@ -32,6 +32,12 @@ custom:
     name: "${self:provider.stackName}-spa-client"
   databaseConnection:
     name: "${self:provider.stackName}-db-connection"
+  resourceServer:
+    name: "${self:provider.stackName}-resource-server"
+    identifier: "https://${self:provider.stackName}.groffcole.com/"
+    scopes:
+      adminUser: "admin.user.${self:provider.stackName}"
+      regularUser: "regular.user.${self:provider.stackName}"
 
 plugins:
   - serverless-webpack
@@ -42,6 +48,8 @@ functions:
     handler: src/service-tokens/spa-client/SpaClientHandler.handle
   databaseConnectionHandler:
     handler: src/service-tokens/database-connection/DatabaseConnectionHandler.handle
+  resourceServerHandler:
+    handler: src/service-tokens/resource-server/ResourceServerHandler.handle
 
 resources:
   Resources:
@@ -70,3 +78,17 @@ resources:
         Stage: ${self:provider.stage}
         SpaClientId:
           Ref: SpaClient
+
+    ResourceServer:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [ResourceServerHandlerLambdaFunction, Arn]
+        ResourceServerName: ${self:custom.resourceServer.name}
+        Stage: ${self:provider.stage}
+        Identifier: ${self:custom.resourceServer.identifier}
+        Scopes:
+          - value: ${self:custom.resourceServer.scopes.adminUser}
+            description: ${self:custom.resourceServer.scopes.adminUser}
+          - value: ${self:custom.resourceServer.scopes.regularUser}
+            description: ${self:custom.resourceServer.scopes.regularUser}

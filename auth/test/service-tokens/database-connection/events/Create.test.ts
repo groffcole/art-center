@@ -1,4 +1,5 @@
 import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 import { mocked } from "ts-jest/utils";
 
 import { getAuth0ManagementClient, getAuth0MangementClientId } from "../../../../src/utilities/Auth0Utility";
@@ -10,7 +11,6 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { createDatabaseConnection } from "../../../../src/service-tokens/database-connection/events/Create";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 
 const MANAGEMENT_CLIENT_ID = "the management client id";
 const DATABASE_CONNECTION_ID = "the database connection id";
