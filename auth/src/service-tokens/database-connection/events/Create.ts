@@ -34,8 +34,9 @@ const attemptToGetExistingDatabaseConnection = async (
   createEvent: CloudFormationCustomResourceCreateEvent,
   managementClient: ManagementClient
 ) => {
-  const existingConnections = await managementClient.getConnections();
-  return existingConnections.find((connection) => connection.name === createEvent.ResourceProperties.DatabaseConnectionName);
+  return (await managementClient.getConnections()).find(
+    (connection) => connection.name === createEvent.ResourceProperties.DatabaseConnectionName
+  );
 };
 
 const createAndReturnNewDatabaseConnection = async (

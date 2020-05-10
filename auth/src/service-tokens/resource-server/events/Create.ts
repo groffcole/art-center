@@ -34,8 +34,9 @@ const attemptToGetExistingResourceServer = async (
   createEvent: CloudFormationCustomResourceCreateEvent,
   managementClient: ManagementClient
 ) => {
-  const existingResourceServers = await managementClient.getResourceServers();
-  return existingResourceServers.find((resourceServer) => resourceServer.name === createEvent.ResourceProperties.ResourceServerName);
+  return (await managementClient.getResourceServers()).find(
+    (resourceServer) => resourceServer.name === createEvent.ResourceProperties.ResourceServerName
+  );
 };
 
 const createAndReturnNewResourceServer = async (

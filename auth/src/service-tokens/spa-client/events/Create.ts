@@ -28,8 +28,9 @@ export const createSpaClient = async (createEvent: CloudFormationCustomResourceC
 };
 
 const attemptToGetExistingSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent, managementClient: ManagementClient) => {
-  const existingSpaClients = await managementClient.getClients({ fields: ["client_id", "name"], include_fields: true, app_type: ["spa"] });
-  return existingSpaClients.find((spaClient) => spaClient.name === createEvent.ResourceProperties.SpaClientName);
+  return (await managementClient.getClients({ fields: ["client_id", "name"], include_fields: true, app_type: ["spa"] })).find(
+    (spaClient) => spaClient.name === createEvent.ResourceProperties.SpaClientName
+  );
 };
 
 const createAndReturnNewSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent, managementClient: ManagementClient) => {
