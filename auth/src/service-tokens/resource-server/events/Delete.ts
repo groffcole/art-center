@@ -2,6 +2,7 @@ import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda/trigger/clou
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
+import { Stages } from "../../../domain/Stages";
 
 export const deleteResourceServer = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
   if (resourceServerShouldBeDeleted(deleteEvent)) {
@@ -21,7 +22,7 @@ export const deleteResourceServer = async (deleteEvent: CloudFormationCustomReso
 };
 
 const resourceServerShouldBeDeleted = (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
-  return deleteEvent.ResourceProperties.Stage !== "dev" && deleteEvent.ResourceProperties.Stage !== "prod";
+  return deleteEvent.ResourceProperties.Stage !== Stages.DEVELOPMENT && deleteEvent.ResourceProperties.Stage !== Stages.PRODUCTION;
 };
 
 const deleteTheResourceServer = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
