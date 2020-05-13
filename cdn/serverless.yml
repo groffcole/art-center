@@ -3,18 +3,19 @@ service: cdn
 provider:
   name: aws
   stage: ${opt:stage}
-  stackName: art-center-cdn-${self:provider.stage}
+  stackName: ${self:custom.cdnServiceIdentifier}
 
 custom:
+  cdnServiceIdentifier: art-center-cdn-${self:provider.stage}
   hosting:
-    bucketName: ${self:provider.stackName}-hosting-bucket
+    bucketName: ${self:custom.cdnServiceIdentifier}-hosting-bucket
   cdn:
-    idSecretName: ${self:provider.stackName}-cdn-id-secret-name
-    originId: ${self:provider.stackName}-cdn-origin-id
-    originAccessIdentity: ${self:provider.stackName}-cdn-oai
+    idSecretName: ${self:custom.cdnServiceIdentifier}-cdn-id-secret-name
+    originId: ${self:custom.cdnServiceIdentifier}-cdn-origin-id
+    originAccessIdentity: ${self:custom.cdnServiceIdentifier}-cdn-oai
   domain:
     name: ${self:custom.domain.options.${self:provider.stage}, self:custom.domain.options.other}
-    hostedZone: "groffcole.com."
+    hostedZone: groffcole.com.
     options:
       other: ${self:provider.stage}.art.dev.groffcole.com
       dev: art.dev.groffcole.com
@@ -48,7 +49,7 @@ resources:
             - ErrorCachingMinTTL: 300
               ErrorCode: 404
               ResponseCode: 200
-              ResponsePagePath: "/index.html"
+              ResponsePagePath: /index.html
           Origins:
             - Id: ${self:custom.cdn.originId}
               DomainName:
@@ -57,11 +58,11 @@ resources:
                 OriginAccessIdentity: !Join ["", ["origin-access-identity/cloudfront/", Ref: OriginAccessIdentity]]
           DefaultCacheBehavior:
             AllowedMethods:
-              - "GET"
-              - "HEAD"
+              - GET
+              - HEAD
             CachedMethods:
-              - "GET"
-              - "HEAD"
+              - GET
+              - HEAD
             Compress: true
             DefaultTTL: 86400
             ForwardedValues:
@@ -72,16 +73,16 @@ resources:
             MaxTTL: 31536000
             SmoothStreaming: false
             TargetOriginId: ${self:custom.cdn.originId}
-            ViewerProtocolPolicy: "redirect-to-https"
-          DefaultRootObject: "index.html"
+            ViewerProtocolPolicy: redirect-to-https
+          DefaultRootObject: index.html
           Enabled: true
-          HttpVersion: "http2"
+          HttpVersion: http2
           IPV6Enabled: true
-          PriceClass: "PriceClass_All"
+          PriceClass: PriceClass_All
           ViewerCertificate:
             AcmCertificateArn: ${ssm:art.groffcole.com-certificate-arn~true}
-            MinimumProtocolVersion: "TLSv1.1_2016"
-            SslSupportMethod: "sni-only"
+            MinimumProtocolVersion: TLSv1.1_2016
+            SslSupportMethod: sni-only
 
     CloudFrontDistributionIdSecret:
       Type: AWS::SecretsManager::Secret
@@ -96,11 +97,11 @@ resources:
         Bucket: ${self:custom.hosting.bucketName}
         PolicyDocument:
           Statement:
-            - Effect: "Allow"
+            - Effect: Allow
               Principal:
                 CanonicalUser: !GetAtt OriginAccessIdentity.S3CanonicalUserId
               Action:
-                - "s3:GetObject"
+                - s3:GetObject
               Resource: !Join ["", ["arn:aws:s3:::", "${self:custom.hosting.bucketName}", "/*"]]
 
     RecordSetA:
@@ -113,7 +114,7 @@ resources:
           HostedZoneId: Z2FDTNDATAQYW2
         HostedZoneName: ${self:custom.domain.hostedZone}
         Name: ${self:custom.domain.name}
-        Type: "A"
+        Type: A
 
     RecordSetAAAA:
       Type: AWS::Route53::RecordSet
@@ -125,4 +126,4 @@ resources:
           HostedZoneId: Z2FDTNDATAQYW2
         HostedZoneName: ${self:custom.domain.hostedZone}
         Name: ${self:custom.domain.name}
-        Type: "AAAA"
+        Type: AAAA

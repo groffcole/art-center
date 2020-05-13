@@ -4,7 +4,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage}
-  stackName: art-center-auth-${self:provider.stage}
+  stackName: ${self:custom.authServiceIdentifier}
   environment:
     AUTH0_MANAGEMENT_CLIENT_ID_PARAM_NAME: ${self:custom.auth0.managementClient.id.paramName}
     AUTH0_MANAGEMENT_CLIENT_SECRET_PARAM_NAME: ${self:custom.auth0.managementClient.secret.paramName}
@@ -17,27 +17,30 @@ provider:
         - ${self:custom.auth0.managementClient.secret.paramArn}
 
 custom:
+  authServiceIdentifier: art-center-auth-${self:provider.stage}
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
   auth0:
     managementClient:
       id:
-        paramName: "auth0-management-client-id"
-        paramArn: "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:custom.auth0.managementClient.id.paramName}"
+        paramName: auth0-management-client-id
+        paramArn: arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:custom.auth0.managementClient.id.paramName}
       secret:
-        paramName: "auth0-management-client-secret"
-        paramArn: "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:custom.auth0.managementClient.secret.paramName}"
+        paramName: auth0-management-client-secret
+        paramArn: arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:custom.auth0.managementClient.secret.paramName}
   spaClient:
-    name: "${self:provider.stackName}-spa-client"
+    name: ${self:custom.authServiceIdentifier}-spa-client
   databaseConnection:
-    name: "${self:provider.stackName}-db-connection"
+    name: ${self:custom.authServiceIdentifier}-db-connection
   resourceServer:
-    name: "${self:provider.stackName}-resource-server"
-    identifier: "https://${self:provider.stackName}.groffcole.com/"
+    name: ${self:custom.authServiceIdentifier}-resource-server
+    identifier: https://${self:custom.authServiceIdentifier}.groffcole.com/
     scopes:
-      adminUser: "admin.user.${self:provider.stackName}"
-      regularUser: "regular.user.${self:provider.stackName}"
+      adminUser: admin.user.${self:custom.authServiceIdentifier}
+      regularUser: regular.user.${self:custom.authServiceIdentifier}
+  machToMachClient:
+    name: ${self:custom.authServiceIdentifier}-mach-2-mach-client
 
 plugins:
   - serverless-webpack
@@ -50,6 +53,8 @@ functions:
     handler: src/service-tokens/database-connection/DatabaseConnectionHandler.handle
   resourceServerHandler:
     handler: src/service-tokens/resource-server/ResourceServerHandler.handle
+  machToMachClientHandler:
+    handler: src/service-tokens/mach-to-mach-client/MachToMachClientHandler.handle
 
 resources:
   Resources:
@@ -61,13 +66,13 @@ resources:
         SpaClientName: ${self:custom.spaClient.name}
         Stage: ${self:provider.stage}
         Callbacks:
-          - "http://localhost:3000"
+          - http://localhost:3000
         AllowedLogoutUrls:
-          - "http://localhost:3000"
+          - http://localhost:3000
         WebOrigins:
-          - "http://localhost:3000"
+          - http://localhost:3000
         AllowedOrigins:
-          - "http://localhost:3000"
+          - http://localhost:3000
 
     DatabaseConnection:
       Type: AWS::CloudFormation::CustomResource
@@ -92,3 +97,13 @@ resources:
             description: ${self:custom.resourceServer.scopes.adminUser}
           - value: ${self:custom.resourceServer.scopes.regularUser}
             description: ${self:custom.resourceServer.scopes.regularUser}
+
+    MachToMachClient:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [MachToMachClientHandlerLambdaFunction, Arn]
+        MachToMachClientName: ${self:custom.machToMachClient.name}
+        Stage: ${self:provider.stage}
+        ResourceServerId:
+          Ref: ResourceServer
