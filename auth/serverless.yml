@@ -66,13 +66,13 @@ resources:
         SpaClientName: ${self:custom.spaClient.name}
         Stage: ${self:provider.stage}
         Callbacks:
-          - "http://localhost:3000"
+          - http://localhost:3000
         AllowedLogoutUrls:
-          - "http://localhost:3000"
+          - http://localhost:3000
         WebOrigins:
-          - "http://localhost:3000"
+          - http://localhost:3000
         AllowedOrigins:
-          - "http://localhost:3000"
+          - http://localhost:3000
 
     DatabaseConnection:
       Type: AWS::CloudFormation::CustomResource
