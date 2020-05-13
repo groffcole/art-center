@@ -3,15 +3,16 @@ service: cdn
 provider:
   name: aws
   stage: ${opt:stage}
-  stackName: art-center-cdn-${self:provider.stage}
+  stackName: ${self:custom.cdnServiceIdentifier}
 
 custom:
+  cdnServiceIdentifier: art-center-cdn-${self:provider.stage}
   hosting:
-    bucketName: ${self:provider.stackName}-hosting-bucket
+    bucketName: ${self:custom.cdnServiceIdentifier}-hosting-bucket
   cdn:
-    idSecretName: ${self:provider.stackName}-cdn-id-secret-name
-    originId: ${self:provider.stackName}-cdn-origin-id
-    originAccessIdentity: ${self:provider.stackName}-cdn-oai
+    idSecretName: ${self:custom.cdnServiceIdentifier}-cdn-id-secret-name
+    originId: ${self:custom.cdnServiceIdentifier}-cdn-origin-id
+    originAccessIdentity: ${self:custom.cdnServiceIdentifier}-cdn-oai
   domain:
     name: ${self:custom.domain.options.${self:provider.stage}, self:custom.domain.options.other}
     hostedZone: "groffcole.com."
