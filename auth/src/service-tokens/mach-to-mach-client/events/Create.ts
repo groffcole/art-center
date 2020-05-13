@@ -1,25 +1,18 @@
 import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
+import { ManagementClient } from "auth0";
 
-// @ts-ignore
 export const createMachToMachClient = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
   const managementClient = await getAuth0ManagementClient();
-  const clients = await managementClient.getClients({ fields: ["client_id", "name"], include_fields: true, app_type: ["non_interactive"] });
-  const foundClient = clients.find((element) => element.name === createEvent.ResourceProperties.MachToMachClientName);
+  const existingMachToMachClient = await attemptToGetExistingMachToMachClient(createEvent, managementClient);
 
   let clientId: string;
 
-  if (foundClient) {
-    clientId = foundClient.client_id;
+  if (existingMachToMachClient) {
+    clientId = existingMachToMachClient.client_id;
   } else {
-    const machineToMachineClient = await managementClient.createClient({
-      name: createEvent.ResourceProperties.MachToMachClientName,
-      app_type: "non_interactive",
-      oidc_conformant: true,
-      grant_types: ["client_credentials"]
-    });
-    clientId = machineToMachineClient.client_id;
+    clientId = (await createAndReturnNewMachToMachClient(createEvent, managementClient)).client_id;
   }
 
   await sendCloudFormationResponse(
@@ -32,4 +25,25 @@ export const createMachToMachClient = async (createEvent: CloudFormationCustomRe
       PhysicalResourceId: clientId
     })
   );
+};
+
+const attemptToGetExistingMachToMachClient = async (
+  createEvent: CloudFormationCustomResourceCreateEvent,
+  managementClient: ManagementClient
+) => {
+  return (await managementClient.getClients({ fields: ["client_id", "name"], include_fields: true, app_type: ["non_interactive"] })).find(
+    (machToMachClient) => machToMachClient.name === createEvent.ResourceProperties.MachToMachClientName
+  );
+};
+
+const createAndReturnNewMachToMachClient = async (
+  createEvent: CloudFormationCustomResourceCreateEvent,
+  managementClient: ManagementClient
+) => {
+  return await managementClient.createClient({
+    name: createEvent.ResourceProperties.MachToMachClientName,
+    app_type: "non_interactive",
+    oidc_conformant: true,
+    grant_types: ["client_credentials"]
+  });
 };
