@@ -98,12 +98,12 @@ resources:
           - value: ${self:custom.resourceServer.scopes.regularUser}
             description: ${self:custom.resourceServer.scopes.regularUser}
 
-    # MachToMachClient:
-    #   Type: AWS::CloudFormation::CustomResource
-    #   Properties:
-    #     ServiceToken:
-    #       Fn::GetAtt: [MachToMachClientHandlerLambdaFunction, Arn]
-    #     MachineToMachineClientName: ${self:custom.machToMachClient.name}
-    #     Stage: ${self:provider.stage}
-    #     ResourceServerId:
-    #       Ref: ResourceServer
+    MachToMachClient:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [MachToMachClientHandlerLambdaFunction, Arn]
+        MachToMachClientName: ${self:custom.machToMachClient.name}
+        Stage: ${self:provider.stage}
+        ResourceServerId:
+          Ref: ResourceServer
