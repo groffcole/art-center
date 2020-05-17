@@ -5,10 +5,8 @@ import { Stages } from "../../../domain/Stages";
 import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
 
 export const deleteMachToMachClient = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
-  if (deleteEvent.ResourceProperties.Stage === Stages.DEVELOPMENT || deleteEvent.ResourceProperties.Stage === Stages.PRODUCTION) {
-  } else {
-    const managementClient = await getAuth0ManagementClient();
-    await managementClient.deleteClient({ client_id: deleteEvent.PhysicalResourceId });
+  if (machToMachClientShouldBeDeleted(deleteEvent)) {
+    await deleteTheMachToMachClient(deleteEvent);
   }
 
   await sendCloudFormationResponse(
@@ -21,4 +19,13 @@ export const deleteMachToMachClient = async (deleteEvent: CloudFormationCustomRe
       PhysicalResourceId: deleteEvent.PhysicalResourceId
     })
   );
+};
+
+const machToMachClientShouldBeDeleted = (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+  return deleteEvent.ResourceProperties.Stage !== Stages.DEVELOPMENT && deleteEvent.ResourceProperties.Stage !== Stages.PRODUCTION;
+};
+
+const deleteTheMachToMachClient = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+  const managementClient = await getAuth0ManagementClient();
+  await managementClient.deleteClient({ client_id: deleteEvent.PhysicalResourceId });
 };
