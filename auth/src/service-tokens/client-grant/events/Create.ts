@@ -1,26 +1,18 @@
 import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
+import { ManagementClient } from "auth0";
 
 export const createClientGrant = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
   const managementClient = await getAuth0ManagementClient();
-  const clientGrants = await managementClient.getClientGrants();
-  const foundClientGrant = clientGrants.find(
-    (clientGrant) =>
-      clientGrant.client_id === createEvent.ResourceProperties.ClientId && clientGrant.audience === createEvent.ResourceProperties.Audience
-  );
+  const existingClientGrant = await attemptToGetExistingClientGrant(createEvent, managementClient);
 
   let clientGrantId: string;
 
-  if (foundClientGrant) {
-    clientGrantId = foundClientGrant.id;
+  if (existingClientGrant) {
+    clientGrantId = existingClientGrant.id;
   } else {
-    const clientGrant = await managementClient.createClientGrant({
-      client_id: createEvent.ResourceProperties.ClientId,
-      audience: createEvent.ResourceProperties.Audience,
-      scope: []
-    });
-    clientGrantId = clientGrant.id;
+    clientGrantId = (await createAndReturnClientGrant(createEvent, managementClient)).id;
   }
 
   await sendCloudFormationResponse(
@@ -33,4 +25,22 @@ export const createClientGrant = async (createEvent: CloudFormationCustomResourc
       PhysicalResourceId: clientGrantId
     })
   );
+};
+
+const attemptToGetExistingClientGrant = async (
+  createEvent: CloudFormationCustomResourceCreateEvent,
+  managementClient: ManagementClient
+) => {
+  return (await managementClient.getClientGrants()).find(
+    (clientGrant) =>
+      clientGrant.client_id === createEvent.ResourceProperties.ClientId && clientGrant.audience === createEvent.ResourceProperties.Audience
+  );
+};
+
+const createAndReturnClientGrant = async (createEvent: CloudFormationCustomResourceCreateEvent, managementClient: ManagementClient) => {
+  return await managementClient.createClientGrant({
+    client_id: createEvent.ResourceProperties.ClientId,
+    audience: createEvent.ResourceProperties.Audience,
+    scope: []
+  });
 };
