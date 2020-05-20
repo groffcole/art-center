@@ -1,4 +1,6 @@
 import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda";
+import { Stages } from "../../../../src/domain/Stages";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 import { mocked } from "ts-jest/utils";
 
 import { getAuth0ManagementClient } from "../../../../src/utilities/Auth0Utility";
@@ -13,55 +15,49 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { deleteSpaClient } from "../../../../src/service-tokens/spa-client/events/Delete";
-import { Stages } from "../../../../src/domain/Stages";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
+
+const DELETE_EVENT: CloudFormationCustomResourceDeleteEvent = {
+  RequestId: "the request id",
+  LogicalResourceId: "the logical resource id",
+  StackId: "the stack id",
+  ResponseURL: "the response url",
+  PhysicalResourceId: "the physical resource id",
+  //@ts-ignore
+  ResourceProperties: {
+    Stage: "the stage"
+  }
+};
 
 test("deleteSpaClient should delete the spa client", async () => {
-  const deleteEvent: CloudFormationCustomResourceDeleteEvent = createDeleteEvent("the stage");
-
-  await deleteSpaClient(deleteEvent);
+  await deleteSpaClient(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(1);
   expect(mockedManagementClient.deleteClient).toHaveBeenCalledTimes(1);
   expect(mockedManagementClient.deleteClient).toHaveBeenCalledWith({
-    client_id: deleteEvent.PhysicalResourceId
+    client_id: DELETE_EVENT.PhysicalResourceId
   });
-  assertCommonCloudFormationUtilityExpectations(deleteEvent);
+  assertCommonCloudFormationUtilityExpectations(DELETE_EVENT);
 });
 
 test("deleteSpaClient should_not delete the spa client for production stage", async () => {
-  const deleteEvent: CloudFormationCustomResourceDeleteEvent = createDeleteEvent(Stages.PRODUCTION);
-  
-  await deleteSpaClient(deleteEvent);
+  DELETE_EVENT.ResourceProperties.Stage = Stages.PRODUCTION;
+
+  await deleteSpaClient(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(0);
   expect(mockedManagementClient.deleteClient).toHaveBeenCalledTimes(0);
-  assertCommonCloudFormationUtilityExpectations(deleteEvent);
+  assertCommonCloudFormationUtilityExpectations(DELETE_EVENT);
 });
 
 test("deleteSpaClient should_not delete the spa client for development stage", async () => {
-  const deleteEvent: CloudFormationCustomResourceDeleteEvent = createDeleteEvent(Stages.DEVELOPMENT);
+  DELETE_EVENT.ResourceProperties.Stage = Stages.DEVELOPMENT;
 
-  await deleteSpaClient(deleteEvent);
+  await deleteSpaClient(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(0);
   expect(mockedManagementClient.deleteClient).toHaveBeenCalledTimes(0);
-  assertCommonCloudFormationUtilityExpectations(deleteEvent);
+  assertCommonCloudFormationUtilityExpectations(DELETE_EVENT);
 });
-
-const createDeleteEvent = (stage: string): CloudFormationCustomResourceDeleteEvent => {
-  return {
-    RequestId: "the request id",
-    LogicalResourceId: "the logical resource id",
-    StackId: "the stack id",
-    ResponseURL: "the response url",
-    PhysicalResourceId: "the physical resource id",
-    //@ts-ignore
-    ResourceProperties: {
-      Stage: stage
-    }
-  };
-};
 
 const assertCommonCloudFormationUtilityExpectations = (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
   expect(sendCloudFormationResponse).toHaveBeenCalledTimes(1);

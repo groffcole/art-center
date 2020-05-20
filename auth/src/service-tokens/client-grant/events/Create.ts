@@ -2,7 +2,6 @@ import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/clou
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 
-// @ts-ignore
 export const createClientGrant = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
   const managementClient = await getAuth0ManagementClient();
   const clientGrants = await managementClient.getClientGrants();
