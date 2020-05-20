@@ -1,4 +1,5 @@
 import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
+import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 import { mocked } from "ts-jest/utils";
 
 import { getAuth0ManagementClient } from "../../../../src/utilities/Auth0Utility";
@@ -9,7 +10,6 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { createSpaClient } from "../../../../src/service-tokens/spa-client/events/Create";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
 
 const CLIENT_NAME = "the client name";
 const CLIENT_ID = "the client id";

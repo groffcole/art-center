@@ -55,6 +55,8 @@ functions:
     handler: src/service-tokens/resource-server/ResourceServerHandler.handle
   machToMachClientHandler:
     handler: src/service-tokens/mach-to-mach-client/MachToMachClientHandler.handle
+  clientGrantHandler:
+    handler: src/service-tokens/client-grant/ClientGrantHandler.handle
 
 resources:
   Resources:
@@ -107,3 +109,14 @@ resources:
         Stage: ${self:provider.stage}
         ResourceServerId:
           Ref: ResourceServer
+
+    ClientGrant:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [ClientGrantHandlerLambdaFunction, Arn]
+        Stage: ${self:provider.stage}
+        ClientId:
+          Ref: MachToMachClient
+        Audience:
+          Fn::GetAtt: [ResourceServer, Identifier]

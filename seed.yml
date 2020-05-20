@@ -2,8 +2,8 @@ after_deploy:
   - |
     if [ $SEED_SERVICE_NAME == "ui" ]
     then
-      npm run build --prefix user_interface
-      aws s3 sync user_interface/build/ s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --delete
+      npm run build --prefix ui
+      aws s3 sync ui/build/ s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --delete
       distribution_id=$(aws secretsmanager get-secret-value --secret-id art-center-cdn-$SEED_STAGE_NAME-cdn-id-secret-name | jq -r '.SecretString')
       aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
     fi

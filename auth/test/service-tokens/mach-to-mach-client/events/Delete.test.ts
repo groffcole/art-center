@@ -49,7 +49,7 @@ test("deleteMachToMachClient should_not delete the mach to mach client for produ
   assertCommonCloudFormationUtilityExpectations(DELETE_EVENT);
 });
 
-test("deleteSpaClient should_not delete the mach to mach client for development stage", async () => {
+test("deleteMachToMachClient should_not delete the mach to mach client for development stage", async () => {
   DELETE_EVENT.ResourceProperties.Stage = Stages.DEVELOPMENT;
 
   await deleteMachToMachClient(DELETE_EVENT);
