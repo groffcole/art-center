@@ -1,6 +1,7 @@
 import { CloudFormationCustomResourceUpdateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
+import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 
 export const updateResourceServer = async (updateEvent: CloudFormationCustomResourceUpdateEvent) => {
   const managementClient = await getAuth0ManagementClient();
@@ -16,7 +17,7 @@ export const updateResourceServer = async (updateEvent: CloudFormationCustomReso
   await sendCloudFormationResponse(
     updateEvent.ResponseURL,
     JSON.stringify({
-      Status: "SUCCESS",
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: updateEvent.RequestId,
       LogicalResourceId: updateEvent.LogicalResourceId,
       StackId: updateEvent.StackId,

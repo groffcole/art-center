@@ -1,12 +1,12 @@
 import { CloudFormationCustomResourceUpdateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
-import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 
 export const updateDatabaseConnection = async (updateEvent: CloudFormationCustomResourceUpdateEvent) => {
   await sendCloudFormationResponse(
     updateEvent.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: updateEvent.RequestId,
       LogicalResourceId: updateEvent.LogicalResourceId,
       StackId: updateEvent.StackId,

@@ -1,7 +1,7 @@
 import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 import { getAuth0ManagementClient, getAuth0MangementClientId } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
-import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 import { ManagementClient } from "auth0";
 
 export const createDatabaseConnection = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
@@ -18,7 +18,7 @@ export const createDatabaseConnection = async (createEvent: CloudFormationCustom
   await sendCloudFormationResponse(
     createEvent.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: createEvent.RequestId,
       LogicalResourceId: createEvent.LogicalResourceId,
       StackId: createEvent.StackId,

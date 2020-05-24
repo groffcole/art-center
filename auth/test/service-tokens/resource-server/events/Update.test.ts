@@ -13,6 +13,7 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { updateResourceServer } from "../../../../src/service-tokens/resource-server/events/Update";
+import { CloudFormationStatuses } from "../../../../src/domain/CloudFormationStatuses";
 
 const UPDATE_EVENT: CloudFormationCustomResourceUpdateEvent = {
   PhysicalResourceId: "the physical resource id",
@@ -40,7 +41,7 @@ test("updateResourceServer should update the resource server", async () => {
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     UPDATE_EVENT.ResponseURL,
     JSON.stringify({
-      Status: "SUCCESS",
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: UPDATE_EVENT.RequestId,
       LogicalResourceId: UPDATE_EVENT.LogicalResourceId,
       StackId: UPDATE_EVENT.StackId,

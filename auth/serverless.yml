@@ -41,6 +41,12 @@ custom:
       regularUser: regular.user.${self:custom.authServiceIdentifier}
   machToMachClient:
     name: ${self:custom.authServiceIdentifier}-mach-2-mach-client
+  userRole:
+    admin:
+      name: ${self:custom.authServiceIdentifier}-admin-user-role
+      emailAddress: groffcole+${self:custom.authServiceIdentifier}-admin@gmail.com
+    regular:
+      name: ${self:custom.authServiceIdentifier}-regular-user-role
 
 plugins:
   - serverless-webpack
@@ -57,6 +63,8 @@ functions:
     handler: src/service-tokens/mach-to-mach-client/MachToMachClientHandler.handle
   clientGrantHandler:
     handler: src/service-tokens/client-grant/ClientGrantHandler.handle
+  userRoleHandler:
+    handler: src/service-tokens/user-role/UserRoleHandler.handle
 
 resources:
   Resources:
@@ -120,3 +128,15 @@ resources:
           Ref: MachToMachClient
         Audience:
           Fn::GetAtt: [ResourceServer, Identifier]
+
+    AdminUserRole:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [UserRoleHandlerLambdaFunction, Arn]
+        UserRoleName: ${self:custom.adminUserRoleName}
+        Stage: ${self:provider.stage}
+        Permissions:
+          - permission_name: ${self:custom.resourceServer.scopes.adminUser}
+            resource_server_identifier:
+              Fn::GetAtt: [ResourceServer, Identifier]

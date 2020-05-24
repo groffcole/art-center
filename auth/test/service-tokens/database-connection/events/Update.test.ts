@@ -4,7 +4,7 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { updateDatabaseConnection } from "../../../../src/service-tokens/database-connection/events/Update";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../../src/domain/CloudFormationStatuses";
 
 const UPDATE_EVENT: CloudFormationCustomResourceUpdateEvent = {
   ResponseURL: "the response url",
@@ -25,7 +25,7 @@ test("updateDatabaseConnection should only send a cloudformation response", asyn
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     UPDATE_EVENT.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: UPDATE_EVENT.RequestId,
       LogicalResourceId: UPDATE_EVENT.LogicalResourceId,
       StackId: UPDATE_EVENT.StackId,
