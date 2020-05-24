@@ -1,6 +1,6 @@
 import axios from "axios";
 import { mocked } from "ts-jest/utils";
-import { CloudFormationStatus } from "../../src/domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../src/domain/CloudFormationStatuses";
 
 jest.mock("axios");
 const mockedAxiosPut = mocked(axios.put, true);
@@ -54,7 +54,7 @@ test("sendFailedResponse should send failed response to cloudformation with phys
     PhysicalResourceId: "the physical resource id"
   };
   const responseBody = JSON.stringify({
-    Status: CloudFormationStatus.FAILED,
+    Status: CloudFormationStatuses.FAILED,
     Reason: error.message || error.stack || `error processing event: ${JSON.stringify(event)}`,
     RequestId: event.RequestId,
     LogicalResourceId: event.LogicalResourceId,
@@ -86,7 +86,7 @@ test("sendFailedResponse should send failed response to cloudformation with cont
     StackId: "the stack id"
   };
   const responseBody = JSON.stringify({
-    Status: CloudFormationStatus.FAILED,
+    Status: CloudFormationStatuses.FAILED,
     Reason: error.message || error.stack || `error processing event: ${JSON.stringify(event)}`,
     RequestId: event.RequestId,
     LogicalResourceId: event.LogicalResourceId,
@@ -119,7 +119,7 @@ test("sendFailedResponse should send failed response to cloudformation with erro
     StackId: "the stack id"
   };
   const responseBody = JSON.stringify({
-    Status: CloudFormationStatus.FAILED,
+    Status: CloudFormationStatuses.FAILED,
     Reason: expectedErrorMessage,
     RequestId: event.RequestId,
     LogicalResourceId: event.LogicalResourceId,
@@ -154,7 +154,7 @@ test("sendFailedResponse should send failed response to cloudformation with erro
     StackId: "the stack id"
   };
   const responseBody = JSON.stringify({
-    Status: CloudFormationStatus.FAILED,
+    Status: CloudFormationStatuses.FAILED,
     Reason: expectedErrorStack,
     RequestId: event.RequestId,
     LogicalResourceId: event.LogicalResourceId,
@@ -188,7 +188,7 @@ test("sendFailedResponse should send failed response to cloudformation with cust
   };
   const expectedReason = `error processing event: ${JSON.stringify(event)}`
   const responseBody = JSON.stringify({
-    Status: CloudFormationStatus.FAILED,
+    Status: CloudFormationStatuses.FAILED,
     Reason: expectedReason,
     RequestId: event.RequestId,
     LogicalResourceId: event.LogicalResourceId,

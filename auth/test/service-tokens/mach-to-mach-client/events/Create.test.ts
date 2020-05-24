@@ -1,5 +1,5 @@
 import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../../src/domain/CloudFormationStatuses";
 import { mocked } from "ts-jest/utils";
 
 import { getAuth0ManagementClient } from "../../../../src/utilities/Auth0Utility";
@@ -71,7 +71,7 @@ const assertCommonCloudFormationUtilityExpectations = () => {
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     CREATE_EVENT.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: CREATE_EVENT.RequestId,
       LogicalResourceId: CREATE_EVENT.LogicalResourceId,
       StackId: CREATE_EVENT.StackId,

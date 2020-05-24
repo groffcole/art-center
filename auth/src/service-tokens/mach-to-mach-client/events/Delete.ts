@@ -2,7 +2,7 @@ import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda/trigger/clou
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { Stages } from "../../../domain/Stages";
-import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 
 export const deleteMachToMachClient = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
   if (machToMachClientShouldBeDeleted(deleteEvent)) {
@@ -12,7 +12,7 @@ export const deleteMachToMachClient = async (deleteEvent: CloudFormationCustomRe
   await sendCloudFormationResponse(
     deleteEvent.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: deleteEvent.RequestId,
       LogicalResourceId: deleteEvent.LogicalResourceId,
       StackId: deleteEvent.StackId,

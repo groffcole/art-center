@@ -7,14 +7,14 @@ import { getAuth0ManagementClient } from "../../../../src/utilities/Auth0Utility
 jest.mock("../../../../src/utilities/Auth0Utility");
 const mockedGetAuth0ManagementClient = mocked(getAuth0ManagementClient);
 const mockedManagementClient = {
-  deleteClient: jest.fn()
+  deleteRole: jest.fn()
 };
 mockedGetAuth0ManagementClient.mockImplementation((): any => mockedManagementClient);
 
 import { sendCloudFormationResponse } from "../../../../src/utilities/CloudFormationUtility";
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
-import { deleteSpaClient } from "../../../../src/service-tokens/spa-client/events/Delete";
+import { deleteUserRole } from "../../../../src/service-tokens/user-role/events/Delete";
 
 const DELETE_EVENT: CloudFormationCustomResourceDeleteEvent = {
   RequestId: "the request id",
@@ -28,34 +28,34 @@ const DELETE_EVENT: CloudFormationCustomResourceDeleteEvent = {
   }
 };
 
-test("deleteSpaClient should delete the spa client", async () => {
-  await deleteSpaClient(DELETE_EVENT);
+test("deleteUserRole should delete the user role", async () => {
+  await deleteUserRole(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(1);
-  expect(mockedManagementClient.deleteClient).toHaveBeenCalledTimes(1);
-  expect(mockedManagementClient.deleteClient).toHaveBeenCalledWith({
-    client_id: DELETE_EVENT.PhysicalResourceId
+  expect(mockedManagementClient.deleteRole).toHaveBeenCalledTimes(1);
+  expect(mockedManagementClient.deleteRole).toHaveBeenCalledWith({
+    id: DELETE_EVENT.PhysicalResourceId
   });
   assertCommonCloudFormationUtilityExpectations(DELETE_EVENT);
 });
 
-test("deleteSpaClient should_not delete the spa client for production stage", async () => {
+test("deleteUserRole should_not delete the user role for the production stage", async () => {
   DELETE_EVENT.ResourceProperties.Stage = Stages.PRODUCTION;
 
-  await deleteSpaClient(DELETE_EVENT);
+  await deleteUserRole(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(0);
-  expect(mockedManagementClient.deleteClient).toHaveBeenCalledTimes(0);
+  expect(mockedManagementClient.deleteRole).toHaveBeenCalledTimes(0);
   assertCommonCloudFormationUtilityExpectations(DELETE_EVENT);
 });
 
-test("deleteSpaClient should_not delete the spa client for development stage", async () => {
+test("deleteUserRole should_not delete the user role for the development stage", async () => {
   DELETE_EVENT.ResourceProperties.Stage = Stages.DEVELOPMENT;
 
-  await deleteSpaClient(DELETE_EVENT);
+  await deleteUserRole(DELETE_EVENT);
 
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(0);
-  expect(mockedManagementClient.deleteClient).toHaveBeenCalledTimes(0);
+  expect(mockedManagementClient.deleteRole).toHaveBeenCalledTimes(0);
   assertCommonCloudFormationUtilityExpectations(DELETE_EVENT);
 });
 

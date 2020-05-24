@@ -14,7 +14,7 @@ import { sendCloudFormationResponse } from "../../../../src/utilities/CloudForma
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
 import { deleteDatabaseConnection } from "../../../../src/service-tokens/database-connection/events/Delete";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../../src/domain/CloudFormationStatuses";
 
 const DELETE_EVENT: CloudFormationCustomResourceDeleteEvent = {
   PhysicalResourceId: "the physical resource id",
@@ -64,7 +64,7 @@ const assertCommonCloudFormationUtilityExpectations = () => {
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     DELETE_EVENT.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: DELETE_EVENT.RequestId,
       LogicalResourceId: DELETE_EVENT.LogicalResourceId,
       StackId: DELETE_EVENT.StackId,

@@ -1,4 +1,4 @@
-export enum CloudFormationStatus {
+export enum CloudFormationStatuses {
   SUCCESS = "SUCCESS",
   FAILED = "FAILED"
 }

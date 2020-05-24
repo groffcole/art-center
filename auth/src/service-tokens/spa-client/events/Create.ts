@@ -2,7 +2,7 @@ import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/clou
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { ManagementClient } from "auth0";
-import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 
 export const createSpaClient = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
   const managementClient = await getAuth0ManagementClient();
@@ -18,7 +18,7 @@ export const createSpaClient = async (createEvent: CloudFormationCustomResourceC
   await sendCloudFormationResponse(
     createEvent.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: createEvent.RequestId,
       LogicalResourceId: createEvent.LogicalResourceId,
       StackId: createEvent.StackId,

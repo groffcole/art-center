@@ -1,5 +1,5 @@
 import { CloudFormationCustomResourceUpdateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../../src/domain/CloudFormationStatuses";
 
 import { sendCloudFormationResponse } from "../../../../src/utilities/CloudFormationUtility";
 jest.mock("../../../../src/utilities/CloudFormationUtility");
@@ -26,7 +26,7 @@ const assertCloudFormationUtilityExpectations = (updateEvent: CloudFormationCust
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     updateEvent.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: updateEvent.RequestId,
       LogicalResourceId: updateEvent.LogicalResourceId,
       StackId: updateEvent.StackId,
