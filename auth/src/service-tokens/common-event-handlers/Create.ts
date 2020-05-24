@@ -2,11 +2,22 @@ import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/clou
 import { sendCloudFormationResponse } from "../../utilities/CloudFormationUtility";
 import { getAuth0ManagementClient } from "../../utilities/Auth0Utility";
 import { CloudFormationStatus } from "../../domain/CloudFormationStatus";
+import { ClientGrant, ManagementClient } from "auth0";
+
+type GetExistingResourceFunction = (
+  createEvent: CloudFormationCustomResourceCreateEvent,
+  managementClient: ManagementClient
+) => Promise<ClientGrant>;
+
+type CreateNewResourceFunction = (
+  createEvent: CloudFormationCustomResourceCreateEvent,
+  managementClient: ManagementClient
+) => Promise<ClientGrant>;
 
 export const handleResourceCreation = async (
   createEvent: CloudFormationCustomResourceCreateEvent,
-  getExistingResource,
-  createNewResource
+  getExistingResource: GetExistingResourceFunction,
+  createNewResource: CreateNewResourceFunction
 ) => {
   const managementClient = await getAuth0ManagementClient();
   const existingResource = await getExistingResource(createEvent, managementClient);
