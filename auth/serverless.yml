@@ -134,7 +134,7 @@ resources:
       Properties:
         ServiceToken:
           Fn::GetAtt: [UserRoleHandlerLambdaFunction, Arn]
-        UserRoleName: ${self:custom.adminUserRoleName}
+        UserRoleName: ${self:custom.userRole.admin.name}
         Stage: ${self:provider.stage}
         Permissions:
           - permission_name: ${self:custom.resourceServer.scopes.adminUser}
