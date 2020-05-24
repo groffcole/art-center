@@ -7,7 +7,6 @@ import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 export const createClientGrant = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
   const managementClient = await getAuth0ManagementClient();
   const existingClientGrant = await attemptToGetExistingClientGrant(createEvent, managementClient);
-
   let clientGrantId: string;
 
   if (existingClientGrant) {
