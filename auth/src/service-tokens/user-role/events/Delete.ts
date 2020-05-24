@@ -1,12 +1,12 @@
 import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
-import { Stages } from "../../../domain/Stages";
 import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
+import { Stages } from "../../../domain/Stages";
 
-export const deleteClientGrant = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
-  if (clientGrantShouldBeDeleted(deleteEvent)) {
-    await deleteTheClientGrant(deleteEvent);
+export const deleteUserRole = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+  if (userRoleShouldBeDeleted(deleteEvent)) {
+    await deleteTheUserRole(deleteEvent);
   }
 
   await sendCloudFormationResponse(
@@ -21,11 +21,11 @@ export const deleteClientGrant = async (deleteEvent: CloudFormationCustomResourc
   );
 };
 
-const clientGrantShouldBeDeleted = (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+const userRoleShouldBeDeleted = (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
   return deleteEvent.ResourceProperties.Stage !== Stages.DEVELOPMENT && deleteEvent.ResourceProperties.Stage !== Stages.PRODUCTION;
 };
 
-const deleteTheClientGrant = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+const deleteTheUserRole = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
   const managementClient = await getAuth0ManagementClient();
-  await managementClient.deleteClientGrant({ id: deleteEvent.PhysicalResourceId });
+  await managementClient.deleteRole({ id: deleteEvent.PhysicalResourceId });
 };

@@ -4,9 +4,9 @@ import { CloudFormationStatuses } from "../../../../src/domain/CloudFormationSta
 import { sendCloudFormationResponse } from "../../../../src/utilities/CloudFormationUtility";
 jest.mock("../../../../src/utilities/CloudFormationUtility");
 
-import { updateClientGrant } from "../../../../src/service-tokens/client-grant/events/Update";
+import { updateUserRole } from "../../../../src/service-tokens/user-role/events/Update";
 
-test("updateClientGrant should update client grant", async () => {
+test("updateUserRole should update the user role", async () => {
   // @ts-ignore
   const updateEvent: CloudFormationCustomResourceUpdateEvent = {
     PhysicalResourceId: "the physical resource id",
@@ -16,7 +16,7 @@ test("updateClientGrant should update client grant", async () => {
     ResponseURL: "the response url"
   };
 
-  await updateClientGrant(updateEvent);
+  await updateUserRole(updateEvent);
 
   assertCloudFormationUtilityExpectations(updateEvent);
 });

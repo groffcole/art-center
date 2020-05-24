@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Context } from "aws-lambda/handler";
-import { CloudFormationStatus } from "../domain/CloudFormationStatus";
 import { request } from "http";
+import { CloudFormationStatuses } from "../domain/CloudFormationStatuses";
 
 export const sendCloudFormationResponse = async (responseUrl: string, responseBody: string): Promise<void> => {
   try {
@@ -28,7 +28,7 @@ export type CloudFormationResponse = {
 
 const createResponseBody = (resourceId, requestId, logicalResourceId, stackId, responseData?) => {
   const responseBody: CloudFormationResponse = {
-    Status: CloudFormationStatus.SUCCESS,
+    Status: CloudFormationStatuses.SUCCESS,
     RequestId: requestId,
     LogicalResourceId: logicalResourceId,
     StackId: stackId,
@@ -62,7 +62,7 @@ export const sendFailedResponse = async (error: Error, event: any, context: Cont
   await sendCloudFormationResponse(
     event.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.FAILED,
+      Status: CloudFormationStatuses.FAILED,
       Reason: error.message || error.stack || `error processing event: ${JSON.stringify(event)}`,
       RequestId: event.RequestId,
       LogicalResourceId: event.LogicalResourceId,

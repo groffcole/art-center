@@ -1,6 +1,6 @@
 import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda";
 import { Stages } from "../../../../src/domain/Stages";
-import { CloudFormationStatus } from "../../../../src/domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../../src/domain/CloudFormationStatuses";
 import { mocked } from "ts-jest/utils";
 
 import { getAuth0ManagementClient } from "../../../../src/utilities/Auth0Utility";
@@ -64,7 +64,7 @@ const assertCommonCloudFormationUtilityExpectations = (deleteEvent: CloudFormati
   expect(sendCloudFormationResponse).toHaveBeenCalledWith(
     deleteEvent.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: deleteEvent.RequestId,
       LogicalResourceId: deleteEvent.LogicalResourceId,
       StackId: deleteEvent.StackId,

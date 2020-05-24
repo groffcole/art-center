@@ -2,7 +2,7 @@ import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda/trigger/clou
 import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
 import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
 import { Stages } from "../../../domain/Stages";
-import { CloudFormationStatus } from "../../../domain/CloudFormationStatus";
+import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 
 export const deleteSpaClient = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
   if (spaClientShouldBeDeleted(deleteEvent)) {
@@ -12,7 +12,7 @@ export const deleteSpaClient = async (deleteEvent: CloudFormationCustomResourceD
   await sendCloudFormationResponse(
     deleteEvent.ResponseURL,
     JSON.stringify({
-      Status: CloudFormationStatus.SUCCESS,
+      Status: CloudFormationStatuses.SUCCESS,
       RequestId: deleteEvent.RequestId,
       LogicalResourceId: deleteEvent.LogicalResourceId,
       StackId: deleteEvent.StackId,
