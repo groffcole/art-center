@@ -140,3 +140,15 @@ resources:
           - permission_name: ${self:custom.resourceServer.scopes.adminUser}
             resource_server_identifier:
               Fn::GetAtt: [ResourceServer, Identifier]
+
+    RegularUserRole:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [UserRoleHandlerLambdaFunction, Arn]
+        UserRoleName: ${self:custom.userRole.regular.name}
+        Stage: ${self:provider.stage}
+        Permissions:
+          - permission_name: ${self:custom.resourceServer.scopes.regularUser}
+            resource_server_identifier:
+              Fn::GetAtt: [ResourceServer, Identifier]
