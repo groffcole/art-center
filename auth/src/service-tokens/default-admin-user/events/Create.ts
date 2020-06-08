@@ -1,26 +1,30 @@
-// @ts-ignore
-export const createDefaultAdminUser = async (createEvent: CloudFormationCustomResourceCreateEvent) => {}
+import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
+import { CloudFormationCustomResourceCreateEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
+import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
+import { v4 as uuid } from "uuid";
+import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 
-// const createDefaultAdminUser = async (event) => {
-//   const managementClient = await InfrastructureUtility.getAuth0ManagementClient();
+export const createDefaultAdminUser = async (createEvent: CloudFormationCustomResourceCreateEvent) => {
+  const managementClient = await getAuth0ManagementClient();
 
-//   const user = await managementClient.createUser({
-//     email: event.ResourceProperties.EmailAddress,
-//     email_verified: false,
-//     verify_email: true,
-//     connection: event.ResourceProperties.ConnectionName,
-//     password: uuidv4()
-//   });
-//   console.log(`user: ${JSON.stringify(user)}`);
+  const defaultAdminUser = await managementClient.createUser({
+    email: createEvent.ResourceProperties.EmailAddress,
+    email_verified: false,
+    verify_email: true,
+    connection: createEvent.ResourceProperties.ConnectionName,
+    password: uuid()
+  });
 
-//   // assign admin role
-//   await managementClient.assignRolestoUser({ id: user.user_id }, { roles: event.ResourceProperties.Roles });
+  await managementClient.assignRolestoUser({ id: defaultAdminUser.user_id }, { roles: createEvent.ResourceProperties.Roles });
 
-//   await InfrastructureUtility.sendCloudFormationResponse(event.ResponseURL, {
-//     Status: "SUCCESS",
-//     RequestId: event.RequestId,
-//     LogicalResourceId: event.LogicalResourceId,
-//     StackId: event.StackId,
-//     PhysicalResourceId: user.user_id
-//   });
-// };
+  await sendCloudFormationResponse(
+    createEvent.ResponseURL,
+    JSON.stringify({
+      Status: CloudFormationStatuses.SUCCESS,
+      RequestId: createEvent.RequestId,
+      LogicalResourceId: createEvent.LogicalResourceId,
+      StackId: createEvent.StackId,
+      PhysicalResourceId: defaultAdminUser.user_id
+    })
+  );
+};

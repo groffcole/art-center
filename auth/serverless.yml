@@ -162,7 +162,7 @@ resources:
         ServiceToken:
           Fn::GetAtt: [DefaultAdminUserHandlerLambdaFunction, Arn]
         Stage: ${self:provider.stage}
-        EmailAddress: ${self:custom.adminUser.emailAddress}
+        EmailAddress: ${self:custom.defaultAdminUser.emailAddress}
         ConnectionName:
           Fn::GetAtt: [DatabaseConnection, Name]
         Roles:

@@ -59,13 +59,13 @@ test("createUserRole should_not create a new user role if one already exists", a
 const assertCommonManagementClientExpectations = (
   managementClient: any,
   numberOfExpectedCreateRoleCalls: number,
-  numberOfAddPermissionsInRoleCalls: number
+  numberOfExpectedAddPermissionsInRoleCalls: number
 ) => {
   expect(getAuth0ManagementClient).toHaveBeenCalledTimes(1);
   expect(managementClient.getRoles).toHaveBeenCalledTimes(1);
   expect(managementClient.getRoles).toHaveBeenCalledWith({ name_filter: USER_ROLE_NAME });
   expect(managementClient.createRole).toHaveBeenCalledTimes(numberOfExpectedCreateRoleCalls);
-  expect(managementClient.addPermissionsInRole).toHaveBeenCalledTimes(numberOfAddPermissionsInRoleCalls);
+  expect(managementClient.addPermissionsInRole).toHaveBeenCalledTimes(numberOfExpectedAddPermissionsInRoleCalls);
 };
 
 const assertCommonCloudFormationUtilityExpectations = (createEvent: CloudFormationCustomResourceCreateEvent, userRoleId: string) => {
