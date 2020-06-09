@@ -1,12 +1,16 @@
-// @ts-ignore
-export const updateDefaultAdminUser = async (updateEvent: CloudFormationCustomResourceUpdateEvent) => {}
+import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
+import { CloudFormationCustomResourceUpdateEvent } from "aws-lambda";
+import { CloudFormationStatuses } from "../../../domain/CloudFormationStatuses";
 
-// const updateDefaultAdminUser = async (event, context) => {
-//   await InfrastructureUtility.sendCloudFormationResponse(event.ResponseURL, {
-//     Status: "SUCCESS",
-//     RequestId: event.RequestId,
-//     LogicalResourceId: event.LogicalResourceId,
-//     StackId: event.StackId,
-//     PhysicalResourceId: event.PhysicalResourceId || context.logStreamName
-//   });
-// };
+export const updateDefaultAdminUser = async (updateEvent: CloudFormationCustomResourceUpdateEvent) => {
+  await sendCloudFormationResponse(
+    updateEvent.ResponseURL,
+    JSON.stringify({
+      Status: CloudFormationStatuses.SUCCESS,
+      RequestId: updateEvent.RequestId,
+      LogicalResourceId: updateEvent.LogicalResourceId,
+      StackId: updateEvent.StackId,
+      PhysicalResourceId: updateEvent.PhysicalResourceId
+    })
+  );
+};
