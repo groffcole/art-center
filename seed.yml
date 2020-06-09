@@ -1,4 +1,5 @@
 after_deploy:
+# for this thing, get a parameter store value instead of a secret value
   - |
     if [ $SEED_SERVICE_NAME == "ui" ]
     then

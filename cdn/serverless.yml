@@ -84,6 +84,7 @@ resources:
             MinimumProtocolVersion: TLSv1.1_2016
             SslSupportMethod: sni-only
 
+    # make this a parameter store
     CloudFrontDistributionIdSecret:
       Type: AWS::SecretsManager::Secret
       Properties:
