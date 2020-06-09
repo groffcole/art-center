@@ -1,18 +1,22 @@
-// @ts-ignore
-export const deleteDefaultAdminUser = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {};
+import { sendCloudFormationResponse } from "../../../utilities/CloudFormationUtility";
+import { getAuth0ManagementClient } from "../../../utilities/Auth0Utility";
+import { CloudFormationCustomResourceDeleteEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 
-// const deleteDefaultAdminUser = async (event) => {
-//   if (event.ResourceProperties.Stage === "dev" || event.ResourceProperties.Stage === "prod") {
-//   } else {
-//     const managementClient = await InfrastructureUtility.getAuth0ManagementClient();
-//     await managementClient.deleteUser({ id: event.PhysicalResourceId });
-//   }
+export const deleteDefaultAdminUser = async (deleteEvent: CloudFormationCustomResourceDeleteEvent) => {
+  if (deleteEvent.ResourceProperties.Stage === "dev" || deleteEvent.ResourceProperties.Stage === "prod") {
+  } else {
+    const managementClient = await getAuth0ManagementClient();
+    await managementClient.deleteUser({ id: deleteEvent.PhysicalResourceId });
+  }
 
-//   await InfrastructureUtility.sendCloudFormationResponse(event.ResponseURL, {
-//     Status: "SUCCESS",
-//     RequestId: event.RequestId,
-//     LogicalResourceId: event.LogicalResourceId,
-//     StackId: event.StackId,
-//     PhysicalResourceId: event.PhysicalResourceId || context.logStreamName
-//   });
-// };
+  await sendCloudFormationResponse(
+    deleteEvent.ResponseURL,
+    JSON.stringify({
+      Status: "SUCCESS",
+      RequestId: deleteEvent.RequestId,
+      LogicalResourceId: deleteEvent.LogicalResourceId,
+      StackId: deleteEvent.StackId,
+      PhysicalResourceId: deleteEvent.PhysicalResourceId
+    })
+  );
+};
