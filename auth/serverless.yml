@@ -44,9 +44,10 @@ custom:
   userRole:
     admin:
       name: ${self:custom.authServiceIdentifier}-admin-user-role
-      emailAddress: groffcole+${self:custom.authServiceIdentifier}-admin@gmail.com
     regular:
       name: ${self:custom.authServiceIdentifier}-regular-user-role
+  defaultAdminUser:
+    emailAddress: groffcole+${self:custom.authServiceIdentifier}-admin@gmail.com
 
 plugins:
   - serverless-webpack
@@ -65,6 +66,8 @@ functions:
     handler: src/service-tokens/client-grant/ClientGrantHandler.handle
   userRoleHandler:
     handler: src/service-tokens/user-role/UserRoleHandler.handle
+  defaultAdminUserHandler:
+    handler: src/service-tokens/default-admin-user/DefaultAdminUserHandler.handle
 
 resources:
   Resources:
@@ -152,3 +155,15 @@ resources:
           - permission_name: ${self:custom.resourceServer.scopes.regularUser}
             resource_server_identifier:
               Fn::GetAtt: [ResourceServer, Identifier]
+
+    DefaultAdminUser:
+      Type: AWS::CloudFormation::CustomResource
+      Properties:
+        ServiceToken:
+          Fn::GetAtt: [DefaultAdminUserHandlerLambdaFunction, Arn]
+        Stage: ${self:provider.stage}
+        EmailAddress: ${self:custom.defaultAdminUser.emailAddress}
+        ConnectionName:
+          Fn::GetAtt: [DatabaseConnection, Name]
+        Roles:
+          - Ref: AdminUserRole
