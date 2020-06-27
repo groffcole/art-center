@@ -1,11 +1,10 @@
 after_deploy:
-# for this thing, get a parameter store value instead of a secret value
   - |
     if [ $SEED_SERVICE_NAME == "ui" ]
     then
       npm run build --prefix ui
       aws s3 sync ui/build/ s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --delete
-      distribution_id=$(aws secretsmanager get-secret-value --secret-id art-center-cdn-$SEED_STAGE_NAME-cdn-id-secret-name | jq -r '.SecretString')
+      distribution_id=$(aws ssm get-parameter --name art-center-cdn-$SEED_STAGE_NAME-cdn-id-param-name | jq -r '.Parameter.Value')
       aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
     fi
 
