@@ -1,6 +1,6 @@
 after_deploy:
   - |
-    if [ $SEED_SERVICE_NAME == "ui" ]
+    if [ $SEED_SERVICE_NAME = "ui" ]
     then
       npm run build --prefix ui
       aws s3 sync ui/build/ s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --delete
@@ -10,7 +10,7 @@ after_deploy:
 
 before_remove:
   - |
-    if [ $SEED_SERVICE_NAME == "ui" ]
+    if [ $SEED_SERVICE_NAME = "ui" ]
     then
       aws s3 rm s3://art-center-cdn-$SEED_STAGE_NAME-hosting-bucket --recursive
     fi
