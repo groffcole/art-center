@@ -10,7 +10,7 @@ custom:
   hosting:
     bucketName: ${self:custom.cdnServiceIdentifier}-hosting-bucket
   cdn:
-    idSecretName: ${self:custom.cdnServiceIdentifier}-cdn-id-secret-name
+    idParamName: ${self:custom.cdnServiceIdentifier}-cdn-id-param-name
     originId: ${self:custom.cdnServiceIdentifier}-cdn-origin-id
     originAccessIdentity: ${self:custom.cdnServiceIdentifier}-cdn-oai
   domain:
@@ -83,12 +83,13 @@ resources:
             AcmCertificateArn: ${ssm:art.groffcole.com-certificate-arn~true}
             MinimumProtocolVersion: TLSv1.1_2016
             SslSupportMethod: sni-only
-
-    CloudFrontDistributionIdSecret:
-      Type: AWS::SecretsManager::Secret
+            
+    CloudFrontDistributionIdParameter:
+      Type: AWS::SSM::Parameter
       Properties:
-        Name: ${self:custom.cdn.idSecretName}
-        SecretString:
+        Name: ${self:custom.cdn.idParamName}
+        Type: String
+        Value:
           Ref: CloudFrontDistribution
 
     HostingBucketPolicy:
