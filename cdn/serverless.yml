@@ -83,14 +83,7 @@ resources:
             AcmCertificateArn: ${ssm:art.groffcole.com-certificate-arn~true}
             MinimumProtocolVersion: TLSv1.1_2016
             SslSupportMethod: sni-only
-
-    # make this a parameter store
-    # CloudFrontDistributionIdSecret:
-    #   Type: AWS::SecretsManager::Secret
-    #   Properties:
-    #     Name: ${self:custom.cdn.idSecretName}
-    #     SecretString:
-    #       Ref: CloudFrontDistribution
+            
     CloudFrontDistributionIdParameter:
       Type: AWS::SSM::Parameter
       Properties:
