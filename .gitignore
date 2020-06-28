@@ -4,3 +4,4 @@ build
 .serverless
 .webpack
 .DS_Store
+tailwind.generated.css
