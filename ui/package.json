@@ -2,6 +2,9 @@
   "name": "art-center-user-interface",
   "private": true,
   "dependencies": {
+    "@chakra-ui/core": "^0.8.0",
+    "@emotion/core": "^10.0.28",
+    "@emotion/styled": "^10.0.27",
     "@fullhuman/postcss-purgecss": "^2.3.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -11,6 +14,7 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "autoprefixer": "^9.8.4",
+    "emotion-theming": "^10.0.27",
     "postcss-cli": "^7.1.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -23,7 +27,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:tailwind": "tailwindcss build src/tailwind.css -o src/tailwind.generated.css",
+    "build:tailwind": "postcss src/tailwind.css -o src/tailwind.generated.css",
     "prestart": "yarn run build:tailwind",
     "prebuild": "yarn run build:tailwind"
   },
