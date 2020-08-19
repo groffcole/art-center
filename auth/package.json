@@ -4,7 +4,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "auth0": "^2.25.0",
+    "auth0": "^2.27.1",
     "axios": "^0.19.2",
     "source-map-support": "^0.5.10",
     "uuid": "^8.1.0"
